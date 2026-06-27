@@ -207,5 +207,35 @@
       "logoText": "HAVELLS"
     }
   ],
+  "certifications": [
+    {
+      "id": "cert-iso-9001",
+      "title": "ISO 9001:2015",
+      "authority": "Quality Management System",
+      "docNumber": "Placeholder - upload pending",
+      "desc": "Validates our organizational processes across engineering design, component sourcing, and electrical load safety audits."
+    },
+    {
+      "id": "cert-iso-14001",
+      "title": "ISO 14001:2015",
+      "authority": "Environmental Management System",
+      "docNumber": "Placeholder - upload pending",
+      "desc": "Validates our green waste management protocols and resource conservation policies across the production assembly plant."
+    },
+    {
+      "id": "cert-bis",
+      "title": "BIS / ISI Mark",
+      "authority": "Bureau of Indian Standards Compliance",
+      "docNumber": "Placeholder - upload pending",
+      "desc": "Ensures conformity with commercial grid equipment safety and mechanical wiring protection specifications."
+    },
+    {
+      "id": "cert-ce",
+      "title": "CE Marking",
+      "authority": "European Conformity (in progress)",
+      "docNumber": "Placeholder - upload pending",
+      "desc": "Aligned with European economic zone standards for industrial switchgear systems and transformer safety ratings."
+    }
+  ],
   "web3formsKey": "8cd39a4f-e6c4-4d2b-8ba9-fd4fb7488d63"
 }

@@ -22,11 +22,27 @@ import {
   FileDown,
   Trash2,
   PlusCircle,
+  Eye,
   LogOut,
   FolderOpen,
   Upload,
+  CloudLightning,
   Database
 } from 'lucide-react';
+import { CONFIG as DEFAULT_CONFIG } from './config';
+
+// Import Firebase connection
+import { db, isFirebaseEnabled } from './firebase';
+import { 
+  doc, 
+  getDoc, 
+  setDoc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  deleteDoc, 
+  onSnapshot 
+} from 'firebase/firestore';
 
 // Import Assets
 import heroBg from './assets/hero_bg.png';
@@ -98,6 +114,34 @@ const customerLogos = {
   )
 };
 
+// Seed mock queries
+const MOCK_QUERIES = [
+  {
+    id: "mock-1",
+    fullName: "Ramesh Chand",
+    businessName: "Chand Electricals Ltd",
+    email: "ramesh@chandelectricals.com",
+    phone: "9876543210",
+    city: "Mumbai",
+    state: "Maharashtra",
+    message: "Interested in taking the dealership for Current Transformers and smart energy meters in Western region.",
+    status: "Pending",
+    date: new Date(Date.now() - 3600000 * 4).toLocaleString()
+  },
+  {
+    id: "mock-2",
+    fullName: "Suneeta Roy",
+    businessName: "Roy Substation Supplies",
+    email: "suneeta@roysubstations.com",
+    phone: "9123456789",
+    city: "Kolkata",
+    state: "West Bengal",
+    message: "We need custom control panels for an upcoming EPC contract project. Please send compliance sheets.",
+    status: "Reviewed",
+    date: new Date(Date.now() - 3600000 * 24).toLocaleString()
+  }
+];
+
 // Custom animated counter component
 function StatCounter({ target, suffix, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -151,8 +195,134 @@ function StatCounter({ target, suffix, duration = 2000 }) {
   );
 }
 
+// Exact replica logo component matching user image (Vertical Stacked Layout)
+function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }) {
+  const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
+  const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
+  const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
+  const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
+
+  return (
+    <svg viewBox="0 0 400 360" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+      {/* Emblem A */}
+      <path d="M 200 10 L 290 170 L 254 170 L 234 130 L 166 130 L 146 170 L 110 170 Z" fill={primaryColor} />
+      <path d="M 166 130 L 200 62 L 234 130 Z" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      {/* Silver lightning bolt */}
+      <path d="M 200 18 L 182 82 L 202 82 L 196 142 L 222 75 L 200 75 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="0.5" />
+      {/* Curved arch */}
+      <path d="M 80 185 C 160 162, 240 162, 320 185" stroke={primaryColor} strokeWidth="4" strokeLinecap="round" />
+
+      {/* ASHOKA Text */}
+      {/* Letter A1 */}
+      <path d="M 70 242 L 86 202 L 102 242 L 95 242 L 86 220 L 77 242 Z" fill={textColor} />
+      <path d="M 81 237 L 86 225 L 91 237 Z" fill={primaryColor} />
+      {/* Letters S, H, O, K */}
+      <text x="110" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">S</text>
+      <text x="146" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">H</text>
+      <text x="188" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">O</text>
+      <text x="232" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">K</text>
+      {/* Letter A2 */}
+      <path d="M 276 242 L 292 202 L 308 242 L 301 242 L 292 220 L 283 242 Z" fill={textColor} />
+      <path d="M 287 237 L 292 225 L 297 237 Z" fill={primaryColor} />
+
+      {/* POWER MATRIX Text */}
+      <text x="68" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">P</text>
+      <text x="88" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">O</text>
+      <text x="112" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">W</text>
+      {/* E in POWER (3 bars) */}
+      <line x1="144" y1="262" x2="160" y2="262" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="144" y1="268" x2="158" y2="268" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="144" y1="274" x2="160" y2="274" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" />
+      <text x="168" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">R</text>
+
+      <text x="204" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">M</text>
+      {/* A in MATRIX (Caret) */}
+      <path d="M 232 276 L 241 257 L 250 276" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <text x="256" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">T</text>
+      <text x="278" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">R</text>
+      <text x="302" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">I</text>
+      <text x="316" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">X</text>
+
+      {/* PVT. LTD. Divider lines */}
+      <line x1="70" y1="304" x2="148" y2="304" stroke={accentColor} strokeWidth="1.5" />
+      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <text x="200" y="309" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="14" fill={accentColor} textAnchor="middle" letterSpacing="0.08em">PVT. LTD.</text>
+      <line x1="252" y1="304" x2="330" y2="304" stroke={accentColor} strokeWidth="1.5" />
+      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+
+      {/* Tagline */}
+      <line x1="75" y1="324" x2="115" y2="324" stroke={primaryColor} strokeWidth="1.5" />
+      <text x="200" y="328" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="9" fill={accentColor} textAnchor="middle" letterSpacing="0.04em">INNOVATION | POWER | SOLUTIONS</text>
+      <line x1="285" y1="324" x2="325" y2="324" stroke={primaryColor} strokeWidth="1.5" />
+      
+      {/* Underline base */}
+      <line x1="70" y1="338" x2="330" y2="338" stroke={primaryColor} strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+// Exact replica logo component matching user image (Horizontal Layout for sticky nav)
+function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light" }) {
+  const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
+  const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
+  const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
+  const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
+
+  return (
+    <svg viewBox="0 0 290 60" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+      {/* Emblem Left Side */}
+      <path d="M 25 3 L 47 43 L 38.5 43 L 33.5 33 L 16.5 33 L 11.5 43 L 3 43 Z" fill={primaryColor} />
+      <path d="M 16.5 33 L 25 15 L 33.5 33 Z" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <path d="M 25 5 L 20 22 L 25 22 L 23.5 37 L 30.5 20 L 25 20 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="0.5" />
+      <path d="M 2 46 C 10 40, 40 40, 48 46" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" />
+
+      {/* ASHOKA text */}
+      <path d="M 60 24 L 69 6 L 78 24 L 74.5 24 L 69 13.5 L 63.5 24 Z" fill={textColor} />
+      <path d="M 66.5 21.5 L 69 16.5 L 71.5 21.5 Z" fill={primaryColor} />
+      <text x="81" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">S</text>
+      <text x="96" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">H</text>
+      <text x="114" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">O</text>
+      <text x="134" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">K</text>
+      <path d="M 152 24 L 161 6 L 170 24 L 166.5 24 L 161 13.5 L 155.5 24 Z" fill={textColor} />
+      <path d="M 158.5 21.5 L 161 16.5 L 163.5 21.5 Z" fill={primaryColor} />
+
+      {/* POWER MATRIX text */}
+      <text x="60" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">P</text>
+      <text x="69" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">O</text>
+      <text x="80" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">W</text>
+      <line x1="93" y1="31.5" x2="101" y2="31.5" stroke={subtextColor} strokeWidth="1.2" />
+      <line x1="93" y1="34" x2="100" y2="34" stroke={primaryColor} strokeWidth="1.2" />
+      <line x1="93" y1="36.5" x2="101" y2="36.5" stroke={subtextColor} strokeWidth="1.2" />
+      <text x="105" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">R</text>
+
+      <text x="119" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">M</text>
+      <path d="M 132 37 L 136 29 L 140 37" stroke={subtextColor} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <text x="143" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">T</text>
+      <text x="152" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">R</text>
+      <text x="162" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">I</text>
+      <text x="168" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">X</text>
+
+      {/* PVT. LTD. flanking lines */}
+      <line x1="183" y1="34" x2="197" y2="34" stroke={accentColor} strokeWidth="0.8" />
+      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <text x="215" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="7" fill={accentColor} textAnchor="middle" letterSpacing="0.05em">PVT. LTD.</text>
+      <line x1="233" y1="34" x2="247" y2="34" stroke={accentColor} strokeWidth="0.8" />
+      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+
+      {/* Tagline */}
+      <line x1="60" y1="45" x2="85" y2="45" stroke={primaryColor} strokeWidth="0.8" />
+      <text x="135" y="48" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="4.8" fill={accentColor} textAnchor="middle" letterSpacing="0.02em">INNOVATION | POWER | SOLUTIONS</text>
+      <line x1="185" y1="45" x2="210" y2="45" stroke={primaryColor} strokeWidth="0.8" />
+      
+      {/* Underline base */}
+      <line x1="60" y1="52" x2="210" y2="52" stroke={primaryColor} strokeWidth="0.8" />
+    </svg>
+  );
+}
+
 function App() {
   const [siteConfig, setSiteConfig] = useState(null);
+  const [queries, setQueries] = useState([]);
   const [currentPage, setCurrentPage] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -163,13 +333,15 @@ function App() {
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [adminActiveTab, setAdminActiveTab] = useState('email');
+  const [adminActiveTab, setAdminActiveTab] = useState('queries');
+  const [selectedQuery, setSelectedQuery] = useState(null);
 
   // Editor states
   const [editedConfig, setEditedConfig] = useState(null);
   const [newProduct, setNewProduct] = useState({ name: '', shortDesc: '', desc: '', image: 'product_switchgear.png' });
   const [newTeam, setNewTeam] = useState({ name: '', role: '', bio: '' });
   const [newTestimonial, setNewTestimonial] = useState({ client: '', company: '', text: '' });
+  const [newCertification, setNewCertification] = useState({ title: '', authority: '', docNumber: '', desc: '' });
 
   // Product page feedback submission states
   const [feedbackData, setFeedbackData] = useState({ client: '', company: '', text: '' });
@@ -187,16 +359,91 @@ function App() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Load config.json on mount
+  // Load config.json and initialize Firebase Firestore
   useEffect(() => {
-    fetch('/config.json')
-      .then((r) => r.json())
-      .then((data) => {
-        setSiteConfig(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load /config.json static file", err);
+    const getMergedConfig = (loadedData) => {
+      if (!loadedData) return DEFAULT_CONFIG;
+      return {
+        ...DEFAULT_CONFIG,
+        ...loadedData,
+        certifications: loadedData.certifications && loadedData.certifications.length > 0
+          ? loadedData.certifications 
+          : (DEFAULT_CONFIG.certifications || [])
+      };
+    };
+
+    if (isFirebaseEnabled) {
+      // 1. Fetch Config from Firestore
+      const configDocRef = doc(db, 'configs', 'site');
+      getDoc(configDocRef).then((snap) => {
+        if (snap.exists()) {
+          setSiteConfig(getMergedConfig(snap.data()));
+        } else {
+          // Fallback to loading local config first, then seeding Firestore
+          fetch('/config.json')
+            .then(r => r.json())
+            .then((localData) => {
+              const merged = getMergedConfig(localData);
+              setDoc(configDocRef, merged).then(() => {
+                setSiteConfig(merged);
+              });
+            })
+            .catch(() => {
+              setDoc(configDocRef, DEFAULT_CONFIG).then(() => {
+                setSiteConfig(DEFAULT_CONFIG);
+              });
+            });
+        }
+      }).catch((e) => {
+        console.error("Firestore config load error: ", e);
       });
+
+      // 2. Real-time Subscription to Queries collection
+      const queriesColRef = collection(db, 'queries');
+      const unsub = onSnapshot(queriesColRef, (snapshot) => {
+        const queriesList = [];
+        snapshot.forEach((doc) => {
+          queriesList.push({ id: doc.id, ...doc.data() });
+        });
+        queriesList.sort((a, b) => b.id - a.id || new Date(b.date) - new Date(a.date));
+        setQueries(queriesList);
+      });
+
+      return () => unsub();
+
+    } else {
+      // Offline Local Fallback
+      const storedConfig = localStorage.getItem('ashoka_site_config');
+      if (storedConfig) {
+        try {
+          setSiteConfig(getMergedConfig(JSON.parse(storedConfig)));
+        } catch (e) {
+          console.error("Error loading config", e);
+        }
+      } else {
+        // Load default public config.json file
+        fetch('/config.json')
+          .then((r) => r.json())
+          .then((data) => {
+            setSiteConfig(getMergedConfig(data));
+          })
+          .catch(() => {
+            setSiteConfig(DEFAULT_CONFIG);
+          });
+      }
+
+      const storedQueries = localStorage.getItem('ashoka_queries');
+      if (storedQueries) {
+        try {
+          setQueries(JSON.parse(storedQueries));
+        } catch (e) {
+          console.error("Error loading queries", e);
+        }
+      } else {
+        localStorage.setItem('ashoka_queries', JSON.stringify(MOCK_QUERIES));
+        setQueries(MOCK_QUERIES);
+      }
+    }
 
     // Admin login session cache
     const adminSession = sessionStorage.getItem('admin_logged_in');
@@ -281,12 +528,24 @@ function App() {
     }));
   };
 
-  // Submit enquiry to Gmail using Web3Forms
+  // Submit enquiry to Gmail (Web3Forms) AND save to Firestore Database
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
-    // Prepare Web3Forms payload
-    const payload = {
+    const newEntry = {
+      fullName: formData.fullName,
+      businessName: formData.businessName,
+      email: formData.email,
+      phone: formData.phone,
+      city: formData.city,
+      state: formData.state,
+      message: formData.message,
+      status: 'Pending',
+      date: new Date().toLocaleString()
+    };
+
+    // 1. Send Email to Gmail using Web3Forms
+    const emailPayload = {
       access_key: siteConfig.web3formsKey || "YOUR_ACCESS_KEY_HERE",
       subject: `New Dealership Enquiry - ${formData.businessName}`,
       from_name: "Ashoka Power Matrix Portal",
@@ -299,41 +558,51 @@ function App() {
     };
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json"
         },
-        body: JSON.stringify(payload)
-      });
-
-      const resData = await response.json();
-      if (resData.success) {
-        setIsSubmitted(true);
-        setTimeout(() => {
-          setIsSubmitted(false);
-          setFormData({
-            fullName: '',
-            businessName: '',
-            email: '',
-            phone: '',
-            city: '',
-            state: '',
-            message: ''
-          });
-        }, 5000);
-      } else {
-        alert("Email forwarding service error: " + (resData.message || "Please check your Web3Forms access key."));
-      }
-    } catch (err) {
-      console.error("Form submit failure: ", err);
-      alert("Failed to submit form. Please check your internet connection.");
+        body: JSON.stringify(emailPayload)
+      }).catch((e) => console.error("Web3Forms submit error: ", e));
+    } catch (e) {
+      console.error(e);
     }
+
+    // 2. Write Document to Firestore Database or Local Storage
+    if (isFirebaseEnabled) {
+      try {
+        await addDoc(collection(db, 'queries'), {
+          id: Date.now(), // sorting tag
+          ...newEntry
+        });
+      } catch (err) {
+        console.error("Firestore submit error: ", err);
+      }
+    } else {
+      const updatedQueries = [{ id: Date.now(), ...newEntry }, ...queries];
+      setQueries(updatedQueries);
+      localStorage.setItem('ashoka_queries', JSON.stringify(updatedQueries));
+    }
+
+    setIsSubmitted(true);
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setFormData({
+        fullName: '',
+        businessName: '',
+        email: '',
+        phone: '',
+        city: '',
+        state: '',
+        message: ''
+      });
+    }, 5000);
   };
 
-  // Product Page feedback submit
-  const handleFeedbackSubmit = (e) => {
+  // Product Page feedback submit (Saves globally to Firestore or local config)
+  const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!feedbackData.client || !feedbackData.text) return;
     
@@ -343,18 +612,31 @@ function App() {
       text: feedbackData.text
     };
 
+    const updatedTestimonials = [newReview, ...siteConfig.testimonials];
     const updated = {
       ...siteConfig,
-      testimonials: [newReview, ...siteConfig.testimonials]
+      testimonials: updatedTestimonials
     };
 
-    setSiteConfig(updated);
+    if (isFirebaseEnabled) {
+      try {
+        await updateDoc(doc(db, 'configs', 'site'), {
+          testimonials: updatedTestimonials
+        });
+        setSiteConfig(updated);
+      } catch (err) {
+        console.error("Error syncing testimonials with Firestore: ", err);
+      }
+    } else {
+      setSiteConfig(updated);
+      localStorage.setItem('ashoka_site_config', JSON.stringify(updated));
+    }
+
     setIsFeedbackSubmitted(true);
     setFeedbackData({ client: '', company: '', text: '' });
-    
     setTimeout(() => {
       setIsFeedbackSubmitted(false);
-    }, 5000);
+    }, 4000);
   };
 
   // Device image selection handler
@@ -397,15 +679,31 @@ function App() {
     setAdminPassword('');
   };
 
-  // Save changes locally to React state
-  const handleSaveSettings = (e) => {
+  // Helper to commit edits globally to Firestore or locally to localStorage
+  const commitConfigChange = async (updatedConfig) => {
+    if (isFirebaseEnabled) {
+      try {
+        await setDoc(doc(db, 'configs', 'site'), updatedConfig);
+        setSiteConfig(updatedConfig);
+      } catch (err) {
+        console.error("Failed to sync change with Firestore: ", err);
+        alert("Sync error. Please check Firestore security rules.");
+      }
+    } else {
+      setSiteConfig(updatedConfig);
+      localStorage.setItem('ashoka_site_config', JSON.stringify(updatedConfig));
+    }
+  };
+
+  // Save branding settings
+  const handleSaveSettings = async (e) => {
     e.preventDefault();
-    setSiteConfig(editedConfig);
-    alert("Changes saved to layout preview! Remember to click 'Export config.json' below to download and update your website globally.");
+    await commitConfigChange(editedConfig);
+    alert("Settings updated globally!");
   };
 
   // Product CRUD
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!newProduct.name || !newProduct.shortDesc) return;
     const addedProduct = {
@@ -416,53 +714,118 @@ function App() {
       ...siteConfig,
       products: [...siteConfig.products, addedProduct]
     };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
     setNewProduct({ name: '', shortDesc: '', desc: '', image: 'product_switchgear.png' });
-    alert("Product added to preview list! Click 'Export config.json' to publish permanently.");
+    alert("Product added successfully!");
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
     const updatedProducts = siteConfig.products.filter(p => p.id !== id);
     const updated = { ...siteConfig, products: updatedProducts };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
   };
 
   // Team CRUD
-  const handleAddTeam = (e) => {
+  const handleAddTeam = async (e) => {
     e.preventDefault();
     if (!newTeam.name || !newTeam.role) return;
     const updated = {
       ...siteConfig,
       team: [...siteConfig.team, newTeam]
     };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
     setNewTeam({ name: '', role: '', bio: '' });
-    alert("Team member added to preview! Click 'Export config.json' to publish.");
+    alert("Team member added!");
   };
 
-  const handleDeleteTeam = (name) => {
+  const handleDeleteTeam = async (name) => {
     const updatedTeam = siteConfig.team.filter(t => t.name !== name);
     const updated = { ...siteConfig, team: updatedTeam };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
   };
 
   // Testimonials CRUD
-  const handleAddTestimonial = (e) => {
+  const handleAddTestimonial = async (e) => {
     e.preventDefault();
     if (!newTestimonial.client || !newTestimonial.text) return;
     const updated = {
       ...siteConfig,
       testimonials: [...siteConfig.testimonials, newTestimonial]
     };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
     setNewTestimonial({ client: '', company: '', text: '' });
-    alert("Testimonial added to preview! Click 'Export config.json' to publish.");
+    alert("Testimonial added!");
   };
 
-  const handleDeleteTestimonial = (client) => {
+  const handleDeleteTestimonial = async (client) => {
     const updatedTest = siteConfig.testimonials.filter(t => t.client !== client);
     const updated = { ...siteConfig, testimonials: updatedTest };
-    setSiteConfig(updated);
+    await commitConfigChange(updated);
+  };
+
+  // Certifications CRUD
+  const handleAddCertification = async (e) => {
+    e.preventDefault();
+    if (!newCertification.title || !newCertification.authority) return;
+    const addedCert = {
+      ...newCertification,
+      id: 'cert-' + Date.now()
+    };
+    const updated = {
+      ...siteConfig,
+      certifications: [...(siteConfig.certifications || []), addedCert]
+    };
+    await commitConfigChange(updated);
+    setNewCertification({ title: '', authority: '', docNumber: '', desc: '' });
+    alert("Certification added successfully!");
+  };
+
+  const handleDeleteCertification = async (id) => {
+    const updatedCerts = (siteConfig.certifications || []).filter(c => c.id !== id);
+    const updated = { ...siteConfig, certifications: updatedCerts };
+    await commitConfigChange(updated);
+  };
+
+  // Queries operations
+  const handleToggleQueryStatus = async (id) => {
+    const queryItem = queries.find(q => q.id === id);
+    if (!queryItem) return;
+    const newStatus = queryItem.status === 'Pending' ? 'Reviewed' : 'Pending';
+
+    if (isFirebaseEnabled) {
+      try {
+        await updateDoc(doc(db, 'queries', id), { status: newStatus });
+      } catch (err) {
+        console.error("Failed to update status in Firestore: ", err);
+      }
+    } else {
+      const updated = queries.map(q => {
+        if (q.id === id) {
+          return { ...q, status: newStatus };
+        }
+        return q;
+      });
+      setQueries(updated);
+      localStorage.setItem('ashoka_queries', JSON.stringify(updated));
+      if (selectedQuery && selectedQuery.id === id) {
+        setSelectedQuery(updated.find(q => q.id === id));
+      }
+    }
+  };
+
+  const handleDeleteQuery = async (id) => {
+    if (isFirebaseEnabled) {
+      try {
+        await deleteDoc(doc(db, 'queries', id));
+      } catch (err) {
+        console.error("Failed to delete from Firestore: ", err);
+      }
+    } else {
+      const updated = queries.filter(q => q.id !== id);
+      setQueries(updated);
+      localStorage.setItem('ashoka_queries', JSON.stringify(updated));
+      setSelectedQuery(null);
+    }
   };
 
   // Direct array mutations
@@ -472,7 +835,7 @@ function App() {
     setEditedConfig({ ...editedConfig, services: updatedServices });
   };
 
-  // Export JSON Utility
+  // Export JSON configuration tool (as fallback)
   const handleExportConfig = () => {
     const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
       JSON.stringify(siteConfig, null, 2)
@@ -490,7 +853,7 @@ function App() {
     { label: 'Home', path: '#/' },
     { label: 'About', path: '#/about' },
     { label: 'Products', path: '#/products' },
-    { label: 'Quality', path: '#/quality' },
+    { label: 'Certifications', path: '#/certifications' },
     { label: 'Services', path: '#/services' },
     { label: 'Our Customers', path: '#/#customers' },
     { label: 'Become a Dealer', path: '#/dealer' },
@@ -545,12 +908,8 @@ function App() {
       {/* Sticky Header */}
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
-          <a href="#/" className="logo-container">
-            <div className="logo">
-              {siteConfig.company.logoText}
-              <span className="accent">{siteConfig.company.logoAccent}</span>
-            </div>
-            <span className="logo-tagline">{siteConfig.company.tagline}</span>
+          <a href="#/" className="logo-container" style={{ textDecoration: 'none' }}>
+            <AshokaLogoHorizontal width="210px" mode="light" />
           </a>
 
           {/* Desktop Nav */}
@@ -856,7 +1215,7 @@ function App() {
                   <div className="form-success-msg">
                     <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
                     <div>
-                      <strong>Feedback Saved Locally!</strong> Download updated `config.json` inside footer **Admin Desk** to publish permanently for all users.
+                      <strong>Feedback Posted!</strong> Your testimonial is now active and saved globally.
                     </div>
                   </div>
                 )}
@@ -908,25 +1267,85 @@ function App() {
           </section>
         )}
 
-        {currentPage === 'quality' && (
+        {currentPage === 'certifications' && (
           <section className="page-view container">
-            <div className="page-header center">
-              <h2 className="section-title-center">Commitment to Quality</h2>
-              <p>Our commitment to rigorous testing and premium grade materials guarantees safe operation in hazardous fields.</p>
+            <div className="page-header" style={{ marginBottom: '40px' }}>
+              <span style={{ fontSize: '0.7rem', color: '#0F3D91', fontWeight: '800', letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                / Certifications & Compliance
+              </span>
+              <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: '800', color: '#111827', lineHeight: '1.15', marginBottom: '16px', letterSpacing: '-0.02em' }}>
+                Certifications you can verify.<br />Compliance you can build on.
+              </h1>
+              <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', maxWidth: '800px', lineHeight: '1.6', margin: 0 }}>
+                We design and test against Indian and international standards. Placeholder certificates below — actual documents available on request.
+              </p>
             </div>
-            <div className="quality-grid">
-              {qualityIcons.map((q, idx) => {
-                const IconComp = q.icon;
-                return (
-                  <div key={idx} className="quality-card">
-                    <div className="quality-icon">
-                      <IconComp size={32} />
+
+            {/* Certifications Grid */}
+            {siteConfig.certifications && siteConfig.certifications.length > 0 && (
+              <div className="certifications-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '28px', marginTop: '32px' }}>
+                {siteConfig.certifications.map((cert) => (
+                  <div key={cert.id} className="cert-card">
+                    {/* Upper certificate area */}
+                    <div style={{ padding: '36px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', backgroundColor: '#FFFFFF', flexGrow: '1' }}>
+                      {/* Vector Certificate Ribbon Icon */}
+                      <svg viewBox="0 0 100 100" width="48" height="48" style={{ color: '#0046AD', marginBottom: '16px' }} fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="40" r="22" stroke="currentColor" strokeWidth="2.5" />
+                        <circle cx="50" cy="40" r="14" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
+                        <path d="M 42 58 L 35 88 L 50 80 L 65 88 L 58 58" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
+                        <path d="M 50 58 L 50 80" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                      
+                      <span style={{ display: 'block', fontSize: '0.64rem', letterSpacing: '0.15em', color: 'var(--text-light)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '6px' }}>
+                        Certificate
+                      </span>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111827', marginBottom: '6px', lineHeight: '1.2' }}>
+                        {cert.title}
+                      </h3>
+                      <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-light)', fontWeight: '500' }}>
+                        {cert.docNumber}
+                      </span>
                     </div>
-                    <h3>{q.title}</h3>
-                    <p>{q.desc}</p>
+
+                    {/* Lower certificate meta area */}
+                    <div style={{ padding: '16px 20px', backgroundColor: '#F9FAFB', borderTop: '1px solid var(--border)', textAlign: 'left' }}>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#374151', marginBottom: '2px' }}>
+                        {cert.title}
+                      </h4>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: '1.3' }}>
+                        {cert.authority}
+                      </p>
+                    </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+            )}
+
+            {/* Bottom Quality & Compliance Explanations */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', marginTop: '60px', borderTop: '1px solid var(--border)', paddingTop: '50px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{ color: '#0046AD', marginBottom: '12px' }}>
+                  <ShieldCheck size={28} />
+                </div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', marginBottom: '8px' }}>
+                  Quality Assurance
+                </h3>
+                <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>
+                  Every batch undergoes routine tests for ratio, polarity, accuracy, insulation resistance and dielectric strength. Random samples are subjected to extended type tests aligned with IS / IEC standards.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{ color: '#0046AD', marginBottom: '12px' }}>
+                  <CheckCircle2 size={28} />
+                </div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827', marginBottom: '8px' }}>
+                  Compliance
+                </h3>
+                <p style={{ fontSize: '0.94rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>
+                  Designed against IS 2705 (CT), IS 3156 (PT), IS 14697 (energy metering), and aligned with major DISCOM technical specifications across northern and central India.
+                </p>
+              </div>
             </div>
           </section>
         )}
@@ -1012,7 +1431,7 @@ function App() {
                   <div className="form-success-msg">
                     <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
                     <div>
-                      <strong>Enquiry Submitted!</strong> Your request has been emailed directly to our Gmail inbox. We will contact you soon.
+                      <strong>Enquiry Submitted!</strong> Your request has been emailed directly to our Gmail inbox and saved to our database. We will contact you soon.
                     </div>
                   </div>
                 ) : null}
@@ -1108,7 +1527,7 @@ function App() {
                     />
                   </div>
                   <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                    Submit Enquiry (Email to Gmail)
+                    Submit Enquiry
                   </button>
                 </form>
               </div>
@@ -1247,12 +1666,27 @@ function App() {
               <div className="admin-dashboard">
                 {/* Sidebar */}
                 <aside className="admin-sidebar">
+                  {/* Database Sync Status Indicators */}
+                  <div style={{ padding: '4px 10px', marginBottom: '14px', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
+                    {isFirebaseEnabled ? (
+                      <div style={{ color: '#059669', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                        <CloudLightning size={14} />
+                        Cloud Sync Enabled
+                      </div>
+                    ) : (
+                      <div style={{ color: '#d97706', fontSize: '0.78rem', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                        <Database size={14} />
+                        Local Storage Only
+                      </div>
+                    )}
+                  </div>
+
                   <button 
-                    className={`admin-sidebar-btn ${adminActiveTab === 'email' ? 'active' : ''}`}
-                    onClick={() => setAdminActiveTab('email')}
+                    className={`admin-sidebar-btn ${adminActiveTab === 'queries' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('queries')}
                   >
-                    <Mail size={16} />
-                    Email Settings
+                    <FolderOpen size={16} />
+                    Dealer Queries ({queries.length})
                   </button>
                   <button 
                     className={`admin-sidebar-btn ${adminActiveTab === 'branding' ? 'active' : ''}`}
@@ -1290,6 +1724,13 @@ function App() {
                     Testimonials
                   </button>
                   <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'certifications' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('certifications')}
+                  >
+                    <Award size={16} />
+                    Certifications CMS
+                  </button>
+                  <button 
                     style={{ marginTop: '24px', backgroundColor: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' }}
                     className="admin-sidebar-btn"
                     onClick={handleAdminLogout}
@@ -1301,57 +1742,87 @@ function App() {
 
                 {/* Dashboard Tabs Content */}
                 <div className="admin-content">
-                  
-                  {/* Publisher Export Widget - Always visible when logged in to help admin sync */}
-                  <div style={{ backgroundColor: 'rgba(15, 61, 145, 0.05)', border: '1px solid rgba(15, 61, 145, 0.12)', padding: '20px', borderRadius: '6px', marginBottom: '24px' }}>
-                    <h4 style={{ color: 'var(--primary)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1rem' }}>
-                      <Database size={16} />
-                      Static Publisher Dashboard
-                    </h4>
-                    <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                      All edits apply immediately to your current screen preview. To publish your changes permanently for all web visitors, click the button below to export the updated configuration file and upload it to your host root (`public/config.json`).
-                    </p>
-                    <button onClick={handleExportConfig} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '0.82rem' }}>
-                      <FileDown size={14} />
-                      Export config.json File
-                    </button>
-                  </div>
+                  {/* Database Setup Help Box */}
+                  {!isFirebaseEnabled && adminActiveTab === 'branding' && (
+                    <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', padding: '16px', borderRadius: '4px', marginBottom: '24px', fontSize: '0.85rem', color: '#78350f' }}>
+                      <h4 style={{ color: '#b45309', marginBottom: '6px' }}>⚠️ Local Database Fallback Alert</h4>
+                      <p style={{ marginBottom: '10px' }}>Your edits are currently saved locally to this browser only. To sync your updates globally for all visitors, set up a free Firebase Firestore project:</p>
+                      <ol style={{ paddingLeft: '20px', lineHeight: '1.5' }}>
+                        <li>Create a project on the <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>Firebase Console</a>.</li>
+                        <li>Add a **Web App** and copy the database configuration.</li>
+                        <li>Create a file named `.env` in the root folder of this project.</li>
+                        <li>Paste your configuration credentials (matching the keys in `.env.example`).</li>
+                        <li>Enable **Cloud Firestore** inside the Firebase console, initialize rules, and restart the project (`npm run dev`).</li>
+                      </ol>
+                    </div>
+                  )}
 
-                  {adminActiveTab === 'email' && (
+                  {editedConfig && adminActiveTab === 'queries' && (
                     <div>
                       <div className="admin-tab-header">
-                        <h2>Email Notifications Settings</h2>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Zero Database Gmail Forwarding</span>
+                        <h2>Enquiry Submissions</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Realtime Database Log</span>
                       </div>
-                      <div style={{ lineHeight: '1.6' }}>
-                        <p style={{ marginBottom: '16px' }}>The website is configured to forward dealership enquiries directly to your Gmail without storing them in any database.</p>
-                        
-                        <div className="form-group" style={{ backgroundColor: 'var(--section-bg)', padding: '20px', border: '1px solid var(--border)', borderRadius: '4px' }}>
-                          <label className="form-label" style={{ color: 'var(--primary)', fontWeight: '700' }}>Web3Forms Access Key</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.web3formsKey || ''}
-                            onChange={(e) => setEditedConfig({ ...editedConfig, web3formsKey: e.target.value })}
-                            className="form-input" 
-                            style={{ margin: '8px 0 6px' }}
-                            placeholder="e.g. 1a2b3c4d-5e6f-..."
-                          />
-                          <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '4px' }}>
-                            Get a free key instantly by typing your email at <a href="https://web3forms.com" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>web3forms.com</a>. Web3Forms forwards enquiries straight to your email.
-                          </p>
-                        </div>
-                        
-                        <div style={{ marginTop: '20px' }}>
-                          <button 
-                            className="btn btn-primary"
-                            onClick={() => {
-                              setSiteConfig(editedConfig);
-                              alert("Key configuration updated! Remember to download 'config.json' and place it in public folder to activate globally.");
-                            }}
-                          >
-                            Save Key Configuration
-                          </button>
-                        </div>
+                      <div className="admin-table-wrapper">
+                        <table className="admin-table">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Name</th>
+                              <th>Business</th>
+                              <th>Phone</th>
+                              <th>Status</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {queries.map((q) => (
+                              <tr key={q.id}>
+                                <td>{q.date.split(',')[0]}</td>
+                                <td style={{ fontWeight: '600' }}>{q.fullName}</td>
+                                <td>{q.businessName}</td>
+                                <td>{q.phone}</td>
+                                <td>
+                                  <span className={`badge ${q.status === 'Pending' ? 'badge-pending' : 'badge-reviewed'}`}>
+                                    {q.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                      className="btn btn-secondary" 
+                                      style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+                                      onClick={() => setSelectedQuery(q)}
+                                    >
+                                      <Eye size={12} />
+                                    </button>
+                                    <button 
+                                      className="btn btn-primary" 
+                                      style={{ padding: '4px 8px', fontSize: '0.75rem', backgroundColor: q.status === 'Pending' ? '#059669' : '#4B5563', borderColor: q.status === 'Pending' ? '#059669' : '#4B5563' }}
+                                      onClick={() => handleToggleQueryStatus(q.id)}
+                                    >
+                                      Check
+                                    </button>
+                                    <button 
+                                      className="btn" 
+                                      style={{ padding: '4px 8px', fontSize: '0.75rem', color: '#dc2626', border: '1px solid #dc2626' }}
+                                      onClick={() => handleDeleteQuery(q.id)}
+                                    >
+                                      <Trash2 size={12} />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                            {queries.length === 0 && (
+                              <tr>
+                                <td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: 'var(--text-light)' }}>
+                                  No enquiry logs found in database.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   )}
@@ -1362,6 +1833,23 @@ function App() {
                         <h2>Branding & Contact Info</h2>
                         <button type="submit" className="btn btn-primary">Save Changes</button>
                       </div>
+                      
+                      {/* Web3Forms Access Key Field */}
+                      <div className="form-group" style={{ backgroundColor: 'var(--section-bg)', padding: '16px', border: '1px solid var(--border)', borderRadius: '4px', marginBottom: '20px' }}>
+                        <label className="form-label" style={{ fontWeight: '700', color: 'var(--primary)' }}>Web3Forms Access Key (For Gmail Delivery)</label>
+                        <input 
+                          type="text" 
+                          value={editedConfig.web3formsKey || ''}
+                          onChange={(e) => setEditedConfig({ ...editedConfig, web3formsKey: e.target.value })}
+                          className="form-input" 
+                          style={{ marginTop: '6px' }}
+                          placeholder="e.g. 1a2b3c4d-5e6f-..."
+                        />
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                          If configured, enquiries will be forwarded straight to your client's Gmail address.
+                        </p>
+                      </div>
+
                       <div className="admin-form-grid">
                         <div className="form-group">
                           <label className="form-label">Company Name</label>
@@ -1561,7 +2049,7 @@ function App() {
                           {newProduct.image.startsWith('data:image') && (
                             <div className="file-preview-container">
                               <img src={newProduct.image} alt="Preview" className="file-preview-img" />
-                              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Image ready for export.</span>
+                              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Image ready for database upload.</span>
                             </div>
                           )}
                         </div>
@@ -1751,6 +2239,89 @@ function App() {
                       </form>
                     </div>
                   )}
+
+                  {editedConfig && adminActiveTab === 'certifications' && (
+                    <div>
+                      <div className="admin-tab-header">
+                        <h2>Certifications CMS</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Manage Quality Credentials</span>
+                      </div>
+                      
+                      {/* Certifications List */}
+                      <div style={{ marginBottom: '40px' }}>
+                        <h3>Active Credentials</h3>
+                        <div style={{ marginTop: '16px' }}>
+                          {(siteConfig.certifications || []).map(c => (
+                            <div key={c.id} className="admin-list-item">
+                              <div className="admin-list-info">
+                                <h4>{c.title}</h4>
+                                <p>{c.authority} — {c.docNumber}</p>
+                              </div>
+                              <button 
+                                className="btn" 
+                                style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
+                                onClick={() => handleDeleteCertification(c.id)}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Add Certification */}
+                      <form onSubmit={handleAddCertification} style={{ borderTop: '2px solid var(--border)', paddingTop: '30px' }}>
+                        <h3>Add Quality Certificate</h3>
+                        <div className="admin-form-grid" style={{ marginTop: '16px' }}>
+                          <div className="form-group">
+                            <label className="form-label">Certificate Title</label>
+                            <input 
+                              type="text" 
+                              value={newCertification.title}
+                              onChange={(e) => setNewCertification({ ...newCertification, title: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Authority / Agency</label>
+                            <input 
+                              type="text" 
+                              value={newCertification.authority}
+                              onChange={(e) => setNewCertification({ ...newCertification, authority: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Document / Report Number</label>
+                          <input 
+                            type="text" 
+                            value={newCertification.docNumber}
+                            onChange={(e) => setNewCertification({ ...newCertification, docNumber: e.target.value })}
+                            className="form-input" 
+                            placeholder="e.g. Cert No. ISO-9001 / Test Report CPRI-88"
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Description / Scope of Audit</label>
+                          <textarea 
+                            value={newCertification.desc}
+                            onChange={(e) => setNewCertification({ ...newCertification, desc: e.target.value })}
+                            className="form-input" 
+                            style={{ minHeight: '60px' }}
+                            required 
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <PlusCircle size={16} />
+                          Add Certification
+                        </button>
+                      </form>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1762,7 +2333,9 @@ function App() {
       <footer className="footer">
         <div className="container footer-top">
           <div className="footer-about">
-            <h3>{siteConfig.company.logoText} <span style={{ color: 'var(--accent)' }}>{siteConfig.company.logoAccent}</span></h3>
+            <div style={{ marginBottom: '16px' }}>
+              <AshokaLogoVertical width="160px" mode="dark" />
+            </div>
             <p>Providing cutting edge B2B power systems, heavy machinery units, smart grid switchboards, and domestic safety systems across India.</p>
             <div className="social-links">
               <a href={siteConfig.socials.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
@@ -1778,7 +2351,7 @@ function App() {
             <ul className="footer-links">
               <li><a href="#/">Home</a></li>
               <li><a href="#/about">About</a></li>
-              <li><a href="#/quality">Quality</a></li>
+              <li><a href="#/certifications">Certifications</a></li>
               <li><a href="#/customers">Customers</a></li>
               <li><a href="#/dealer">Become a Dealer</a></li>
             </ul>
@@ -1852,6 +2425,72 @@ function App() {
                   <Phone size={13} />
                   Call Now
                 </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Query Detail Modal */}
+      {selectedQuery && (
+        <div className="modal-backdrop" onClick={() => setSelectedQuery(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Query Details - {selectedQuery.fullName}</h3>
+              <button className="modal-close-btn" onClick={() => setSelectedQuery(null)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px', fontSize: '0.9rem' }}>
+                <div>
+                  <strong>Business Name:</strong>
+                  <div>{selectedQuery.businessName}</div>
+                </div>
+                <div>
+                  <strong>Date:</strong>
+                  <div>{selectedQuery.date}</div>
+                </div>
+                <div>
+                  <strong>Email:</strong>
+                  <div><a href={`mailto:${selectedQuery.email}`} style={{ color: 'var(--primary)' }}>{selectedQuery.email}</a></div>
+                </div>
+                <div>
+                  <strong>Phone:</strong>
+                  <div><a href={`tel:${selectedQuery.phone}`} style={{ color: 'var(--primary)' }}>{selectedQuery.phone}</a></div>
+                </div>
+                <div>
+                  <strong>Location:</strong>
+                  <div>{selectedQuery.city}, {selectedQuery.state}</div>
+                </div>
+                <div>
+                  <strong>Status:</strong>
+                  <div>
+                    <span className={`badge ${selectedQuery.status === 'Pending' ? 'badge-pending' : 'badge-reviewed'}`}>
+                      {selectedQuery.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginBottom: '24px' }}>
+                <strong>Message:</strong>
+                <p style={{ marginTop: '6px', fontSize: '0.92rem', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
+                  {selectedQuery.message}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => handleToggleQueryStatus(selectedQuery.id)}
+                >
+                  Toggle Status (Pending / Reviewed)
+                </button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setSelectedQuery(null)}
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
