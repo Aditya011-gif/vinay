@@ -11,9 +11,9 @@ const firebaseConfig = {
 };
 
 // Check if credentials are set
-const isConfigComplete = 
-  firebaseConfig.apiKey && 
-  firebaseConfig.apiKey !== 'your_api_key_here' && 
+const isConfigComplete =
+  firebaseConfig.apiKey &&
+  firebaseConfig.apiKey !== 'your_api_key_here' &&
   firebaseConfig.projectId;
 
 let app = null;
