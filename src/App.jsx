@@ -325,6 +325,11 @@ function App() {
   const [feedbackData, setFeedbackData] = useState({ client: '', company: '', text: '' });
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
 
+  // Product enquiry modal state
+  const [enquiryProduct, setEnquiryProduct] = useState(null);
+  const [enquiryData, setEnquiryData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [isEnquirySubmitted, setIsEnquirySubmitted] = useState(false);
+
   // Dealer form state
   const [formData, setFormData] = useState({
     fullName: '',
@@ -832,13 +837,70 @@ function App() {
   };
 
   const handleEnquireProduct = (productName) => {
-    setSelectedProduct(null); // Close modal if open
-    setFormData(prev => ({
-      ...prev,
-      message: `I am interested in: ${productName}. Please share pricing and specifications.`
-    }));
-    setCurrentPage('dealer');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSelectedProduct(null); // Close learn more modal if open
+    setEnquiryProduct(productName);
+    setEnquiryData({ name: '', email: '', phone: '', message: '' });
+    setIsEnquirySubmitted(false);
+  };
+
+  // Product enquiry form submit (Web3Forms + Firestore)
+  const handleProductEnquirySubmit = async (e) => {
+    e.preventDefault();
+    if (!enquiryData.name || !enquiryData.email || !enquiryData.phone) return;
+
+    const newEntry = {
+      fullName: enquiryData.name,
+      businessName: `Product Enquiry: ${enquiryProduct}`,
+      email: enquiryData.email,
+      phone: enquiryData.phone,
+      city: '',
+      state: '',
+      message: enquiryData.message || `Interested in ${enquiryProduct}`,
+      status: 'Pending',
+      date: new Date().toLocaleString()
+    };
+
+    // 1. Send Email via Web3Forms
+    const emailPayload = {
+      access_key: siteConfig.web3formsKey || "YOUR_ACCESS_KEY_HERE",
+      subject: `Product Enquiry - ${enquiryProduct}`,
+      from_name: "Ashoka Power Matrix Portal",
+      "Full Name": enquiryData.name,
+      "Product": enquiryProduct,
+      "Email Address": enquiryData.email,
+      "Phone Number": enquiryData.phone,
+      "Message": enquiryData.message || `Interested in ${enquiryProduct}`
+    };
+
+    try {
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(emailPayload)
+      }).catch((err) => console.error("Web3Forms product enquiry error: ", err));
+    } catch (err) {
+      console.error(err);
+    }
+
+    // 2. Save to Firestore or localStorage
+    if (isFirebaseEnabled) {
+      try {
+        await addDoc(collection(db, 'queries'), { id: Date.now(), ...newEntry });
+      } catch (err) {
+        console.error("Firestore product enquiry error: ", err);
+      }
+    } else {
+      const updatedQueries = [{ id: Date.now(), ...newEntry }, ...queries];
+      setQueries(updatedQueries);
+      localStorage.setItem('ashoka_queries', JSON.stringify(updatedQueries));
+    }
+
+    setIsEnquirySubmitted(true);
+    setTimeout(() => {
+      setIsEnquirySubmitted(false);
+      setEnquiryProduct(null);
+      setEnquiryData({ name: '', email: '', phone: '', message: '' });
+    }, 4000);
   };
 
   // Nav links
@@ -2485,6 +2547,86 @@ function App() {
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Enquiry Modal */}
+      {enquiryProduct && (
+        <div className="modal-backdrop" onClick={() => setEnquiryProduct(null)}>
+          <div className="modal-card" style={{ maxWidth: '480px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Request Quote — {enquiryProduct}</h3>
+              <button className="modal-close-btn" onClick={() => setEnquiryProduct(null)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="modal-body">
+              {isEnquirySubmitted ? (
+                <div className="form-success-msg">
+                  <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                  <div>
+                    <strong>Enquiry Sent!</strong> We'll get back to you shortly with pricing and details for {enquiryProduct}.
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleProductEnquirySubmit}>
+                  <div className="form-group">
+                    <label className="form-label">Your Name *</label>
+                    <input
+                      className="form-input"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={enquiryData.name}
+                      onChange={(e) => setEnquiryData(prev => ({ ...prev, name: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email Address *</label>
+                    <input
+                      className="form-input"
+                      type="email"
+                      placeholder="you@company.com"
+                      value={enquiryData.email}
+                      onChange={(e) => setEnquiryData(prev => ({ ...prev, email: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Phone Number *</label>
+                    <input
+                      className="form-input"
+                      type="tel"
+                      placeholder="+91 XXXXX XXXXX"
+                      value={enquiryData.phone}
+                      onChange={(e) => setEnquiryData(prev => ({ ...prev, phone: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Message (optional)</label>
+                    <textarea
+                      className="form-input"
+                      rows="3"
+                      placeholder="Any specific requirements or quantity details..."
+                      value={enquiryData.message}
+                      onChange={(e) => setEnquiryData(prev => ({ ...prev, message: e.target.value }))}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                    <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+                      <Mail size={14} style={{ marginRight: '6px' }} />
+                      Submit Enquiry
+                    </button>
+                    <a href={`tel:${siteConfig.contact.phone}`} className="btn btn-secondary">
+                      <Phone size={14} style={{ marginRight: '6px' }} />
+                      Call
+                    </a>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>
