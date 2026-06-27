@@ -826,6 +826,21 @@ function App() {
     downloadAnchor.remove();
   };
 
+  // Product page button handlers
+  const handleLearnMore = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleEnquireProduct = (productName) => {
+    setSelectedProduct(null); // Close modal if open
+    setFormData(prev => ({
+      ...prev,
+      message: `I am interested in: ${productName}. Please share pricing and specifications.`
+    }));
+    setCurrentPage('dealer');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Nav links
   const navLinks = [
     { label: 'Home', path: '#/' },
