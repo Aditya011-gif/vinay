@@ -50,6 +50,8 @@ import productSwitchgear from './assets/product_switchgear.png';
 import productPanel from './assets/product_panel.png';
 import productTransformer from './assets/product_transformer.png';
 import productMeter from './assets/product_meter.png';
+import logoIcon from './assets/logo_icon.png';
+import logoName from './assets/logo_name.png';
 
 const productImages = {
   "product_switchgear.png": productSwitchgear,
@@ -238,180 +240,62 @@ function AshokaEmblem({ width = "35", height = "32", mode = "light" }) {
   );
 }
 
-// Exact replica logo component matching user image (Vertical Stacked Layout)
+// Logo with company name displayed vertically beside the icon (Footer / Large display)
 function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light", bgClearColor }) {
-  const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
-  const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
-  const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
-  const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
-  const fillBgClear = bgClearColor || (mode === "light" ? "#FFFFFF" : "#111827");
-
   return (
-    <svg viewBox="0 0 400 360" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id="silver-bolt-grad-vert" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="40%" stopColor="#D1D5DB" />
-          <stop offset="100%" stopColor="#9CA3AF" />
-        </linearGradient>
-        <filter id="emblem-shadow-vert" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="3.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.22" />
-        </filter>
-      </defs>
-
-      {/* Emblem A */}
-      <g transform="translate(110, 10) scale(1.5)">
-        <path
-          d="M 60 5 L 103 85 L 85 85 L 75 66 Q 60 63 45 66 L 35 85 L 17 85 Z"
-          fill={primaryColor}
-          filter="url(#emblem-shadow-vert)"
-        />
-        <path
-          d="M 72 28 L 45 56 L 62 56 L 42 82 L 73 48 L 57 48 Z"
-          fill="url(#silver-bolt-grad-vert)"
-          stroke="#9CA3AF"
-          strokeWidth="0.5"
-          filter="url(#emblem-shadow-vert)"
-        />
-        <path
-          d="M 10 102 Q 60 88 110 102 Q 60 92 10 102 Z"
-          fill={primaryColor}
-          filter="url(#emblem-shadow-vert)"
-        />
-      </g>
-
-      {/* ASHOKA Text */}
-      {/* Letter A1 */}
-      <path d="M 70 242 L 86 202 L 102 242 L 95 242 L 86 220 L 77 242 Z" fill={textColor} />
-      <path d="M 81 237 L 86 225 L 91 237 Z" fill={primaryColor} />
-      {/* Letters S, H, O, K */}
-      <text x="110" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">S</text>
-      <text x="146" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">H</text>
-      <text x="188" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">O</text>
-      <text x="232" y="242" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="42" fill={textColor} letterSpacing="0.05em">K</text>
-      {/* Letter A2 */}
-      <path d="M 276 242 L 292 202 L 308 242 L 301 242 L 292 220 L 283 242 Z" fill={textColor} />
-      <path d="M 287 237 L 292 225 L 297 237 Z" fill={primaryColor} />
-
-      {/* POWER MATRIX Text */}
-      <text x="68" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">P</text>
-      <text x="88" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">O</text>
-      <text x="112" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">W</text>
-      {/* E in POWER (3 bars) */}
-      <line x1="144" y1="262" x2="160" y2="262" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="144" y1="268" x2="158" y2="268" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="144" y1="274" x2="160" y2="274" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" />
-      <text x="168" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">R</text>
-
-      <text x="204" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">M</text>
-      {/* A in MATRIX (Caret) */}
-      <path d="M 232 276 L 241 257 L 250 276" stroke={subtextColor} strokeWidth="2.5" strokeLinecap="round" fill="none" />
-      <text x="256" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">T</text>
-      <text x="278" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">R</text>
-      <text x="302" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">I</text>
-      <text x="316" y="276" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="19" fill={subtextColor} letterSpacing="0.08em">X</text>
-
-      {/* PVT. LTD. Divider lines */}
-      <line x1="70" y1="304" x2="148" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={fillBgClear} />
-      <text x="200" y="309" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="14" fill={accentColor} textAnchor="middle" letterSpacing="0.08em">PVT. LTD.</text>
-      <line x1="252" y1="304" x2="330" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={fillBgClear} />
-
-      {/* Tagline */}
-      <line x1="75" y1="324" x2="115" y2="324" stroke={primaryColor} strokeWidth="1.5" />
-      <text x="200" y="328" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="9" fill={accentColor} textAnchor="middle" letterSpacing="0.04em">INNOVATION | POWER | SOLUTIONS</text>
-      <line x1="285" y1="324" x2="325" y2="324" stroke={primaryColor} strokeWidth="1.5" />
-
-      {/* Underline base */}
-      <line x1="70" y1="338" x2="330" y2="338" stroke={primaryColor} strokeWidth="1.2" />
-    </svg>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width, height }}>
+      <img
+        src={logoIcon}
+        alt="Ashoka Power Matrix Logo"
+        style={{
+          width: '50px',
+          height: 'auto',
+          display: 'block',
+          objectFit: 'contain',
+          flexShrink: 0
+        }}
+      />
+      <img
+        src={logoName}
+        alt="Ashoka Power Matrix Pvt. Ltd."
+        style={{
+          height: '60px',
+          width: 'auto',
+          display: 'block',
+          objectFit: 'contain',
+          filter: mode === 'dark' ? 'brightness(1.8) contrast(1.1)' : 'none'
+        }}
+      />
+    </div>
   );
 }
 
-// Exact replica logo component matching user image (Horizontal Layout for sticky nav)
-function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light", bgClearColor }) {
-  const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
-  const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
-  const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
-  const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
-  const fillBgClear = bgClearColor || (mode === "light" ? "#FFFFFF" : "#111827");
-
+// Logo with company name displayed vertically beside the icon (Navbar / Compact)
+function AshokaLogoHorizontal({ width = "55px", height = "55px", mode = "light", bgClearColor }) {
   return (
-    <svg viewBox="0 0 290 60" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id="silver-bolt-grad-horiz" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="40%" stopColor="#D1D5DB" />
-          <stop offset="100%" stopColor="#9CA3AF" />
-        </linearGradient>
-        <filter id="emblem-shadow-horiz" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="3.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.22" />
-        </filter>
-      </defs>
-
-      {/* Emblem Left Side */}
-      <g transform="translate(1, 2) scale(0.4)">
-        <path
-          d="M 60 5 L 103 85 L 85 85 L 75 66 Q 60 63 45 66 L 35 85 L 17 85 Z"
-          fill={primaryColor}
-          filter="url(#emblem-shadow-horiz)"
-        />
-        <path
-          d="M 72 28 L 45 56 L 62 56 L 42 82 L 73 48 L 57 48 Z"
-          fill="url(#silver-bolt-grad-horiz)"
-          stroke="#9CA3AF"
-          strokeWidth="0.5"
-          filter="url(#emblem-shadow-horiz)"
-        />
-        <path
-          d="M 10 102 Q 60 88 110 102 Q 60 92 10 102 Z"
-          fill={primaryColor}
-          filter="url(#emblem-shadow-horiz)"
-        />
-      </g>
-
-      {/* ASHOKA text */}
-      <path d="M 60 24 L 69 6 L 78 24 L 74.5 24 L 69 13.5 L 63.5 24 Z" fill={textColor} />
-      <path d="M 66.5 21.5 L 69 16.5 L 71.5 21.5 Z" fill={primaryColor} />
-      <text x="81" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">S</text>
-      <text x="96" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">H</text>
-      <text x="114" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">O</text>
-      <text x="134" y="24" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="900" fontSize="20" fill={textColor} letterSpacing="0.04em">K</text>
-      <path d="M 152 24 L 161 6 L 170 24 L 166.5 24 L 161 13.5 L 155.5 24 Z" fill={textColor} />
-      <path d="M 158.5 21.5 L 161 16.5 L 163.5 21.5 Z" fill={primaryColor} />
-
-      {/* POWER MATRIX text */}
-      <text x="60" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">P</text>
-      <text x="69" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">O</text>
-      <text x="80" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">W</text>
-      <line x1="93" y1="31.5" x2="101" y2="31.5" stroke={subtextColor} strokeWidth="1.2" />
-      <line x1="93" y1="34" x2="100" y2="34" stroke={primaryColor} strokeWidth="1.2" />
-      <line x1="93" y1="36.5" x2="101" y2="36.5" stroke={subtextColor} strokeWidth="1.2" />
-      <text x="105" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">R</text>
-
-      <text x="119" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">M</text>
-      <path d="M 132 37 L 136 29 L 140 37" stroke={subtextColor} strokeWidth="1.2" strokeLinecap="round" fill="none" />
-      <text x="143" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">T</text>
-      <text x="152" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">R</text>
-      <text x="162" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">I</text>
-      <text x="168" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="9" fill={subtextColor} letterSpacing="0.05em">X</text>
-
-      {/* PVT. LTD. flanking lines */}
-      <line x1="183" y1="34" x2="197" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={fillBgClear} />
-      <text x="215" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="7" fill={accentColor} textAnchor="middle" letterSpacing="0.05em">PVT. LTD.</text>
-      <line x1="233" y1="34" x2="247" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={fillBgClear} />
-
-      {/* Tagline */}
-      <line x1="60" y1="45" x2="85" y2="45" stroke={primaryColor} strokeWidth="0.8" />
-      <text x="135" y="48" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="4.8" fill={accentColor} textAnchor="middle" letterSpacing="0.02em">INNOVATION | POWER | SOLUTIONS</text>
-      <line x1="185" y1="45" x2="210" y2="45" stroke={primaryColor} strokeWidth="0.8" />
-
-      {/* Underline base */}
-      <line x1="60" y1="52" x2="210" y2="52" stroke={primaryColor} strokeWidth="0.8" />
-    </svg>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height }}>
+      <img
+        src={logoIcon}
+        alt="Ashoka Power Matrix Logo"
+        style={{
+          height: '50px',
+          width: 'auto',
+          display: 'block',
+          objectFit: 'contain',
+          flexShrink: 0
+        }}
+      />
+      <img
+        src={logoName}
+        alt="Ashoka Power Matrix Pvt. Ltd."
+        style={{
+          height: '60px',
+          width: 'auto',
+          display: 'block',
+          objectFit: 'contain'
+        }}
+      />
+    </div>
   );
 }
 function App() {
@@ -1003,7 +887,7 @@ function App() {
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
           <a href="#/" className="logo-container" style={{ textDecoration: 'none' }}>
-            <AshokaLogoHorizontal width="220px" height="auto" mode="light" />
+            <AshokaLogoHorizontal width="auto" height="52px" mode="light" />
           </a>
 
           {/* Desktop Nav */}

@@ -49,7 +49,12 @@ body {
 }
 
 /* Typography Utilities */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   line-height: 1.25;
   color: #111827;
@@ -166,7 +171,8 @@ p {
   margin-top: calc(var(--header-height) + var(--top-bar-height));
   padding-top: 60px;
   padding-bottom: 100px;
-  min-height: calc(100vh - var(--header-height) - var(--top-bar-height) - 340px); /* Keeps footer at bottom */
+  min-height: calc(100vh - var(--header-height) - var(--top-bar-height) - 340px);
+  /* Keeps footer at bottom */
   animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -190,6 +196,7 @@ p {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -203,7 +210,7 @@ p {
   left: 0;
   width: 100%;
   height: var(--header-height);
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.815);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   z-index: 1000;
@@ -994,8 +1001,13 @@ p {
 }
 
 @keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 40px)); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(calc(-50% - 40px));
+  }
 }
 
 /* Become a Dealer Section */
@@ -1514,23 +1526,29 @@ textarea.form-input {
   .hamburger {
     display: flex;
   }
+
   .nav {
     display: none;
   }
+
   .about-grid {
     grid-template-columns: 1fr;
     gap: 30px;
   }
+
   .dealer-grid {
     grid-template-columns: 1fr;
     gap: 30px;
   }
+
   .footer-top {
     grid-template-columns: 1fr 1fr;
   }
+
   .admin-dashboard {
     flex-direction: column;
   }
+
   .admin-sidebar {
     width: 100%;
     flex-direction: row;
@@ -1542,6 +1560,7 @@ textarea.form-input {
   .top-bar-info {
     display: none;
   }
+
   .top-bar-container {
     justify-content: center;
   }
@@ -1552,17 +1571,21 @@ textarea.form-input {
     padding-top: 40px;
     padding-bottom: 60px;
   }
+
   .form-group-row {
     grid-template-columns: 1fr;
     gap: 0;
   }
+
   .footer-top {
     grid-template-columns: 1fr;
   }
+
   .footer-bottom {
     flex-direction: column;
     text-align: center;
   }
+
   .admin-form-grid {
     grid-template-columns: 1fr;
     gap: 0;
