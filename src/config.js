@@ -35,61 +35,61 @@ export const CONFIG = {
     {
       id: "srv-mfg",
       title: "Electrical Manufacturing",
-      description: "High-precision manufacturing of switchgears, distribution boards, and heavy-duty electrical fittings using grade-A raw materials."
+      description: "High-precision production of premium switchgears, distribution boards, and heavy-duty electrical components."
     },
     {
       id: "srv-ind",
       title: "Industrial Solutions",
-      description: "Designing end-to-end turnkey power distribution layouts for high-voltage industrial plants, factories, and warehouses."
+      description: "End-to-end turnkey power distribution layouts designed for high-voltage industrial plants and factories."
     },
     {
       id: "srv-oem",
       title: "OEM Manufacturing",
-      description: "Flexible, high-capacity original equipment manufacturing services tailored to national and international brand specifications."
+      description: "Scalable original equipment manufacturing services tailored to national and international brand specifications."
     },
     {
       id: "srv-cust",
       title: "Custom Products",
-      description: "Bespoke engineering solutions for custom size control panels, specialized distribution boards, and distinct busway configurations."
+      description: "Bespoke engineering for custom control panels, distribution boards, and distinct busway configurations."
     },
     {
       id: "srv-tech",
       title: "Technical Support",
-      description: "24/7 dedicated engineering support for installation supervision, system testing, load calculations, and commissioning."
+      description: "Dedicated expert guidance for installation, load calculations, and commissioning."
     },
     {
       id: "srv-sales",
       title: "After Sales Support",
-      description: "Prompt troubleshooting, AMC services, supply of original spares, and periodic electrical inspection services."
+      description: "Prompt troubleshooting, comprehensive AMC services, and original spares supply."
     }
   ],
   products: [
     {
       id: "prod-swg",
       name: "Modular Switchgears & DBs",
-      shortDesc: "High-breaking capacity circuit breakers and distribution boards for home and industry.",
-      desc: "Engineered for maximum electrical protection, our modular switchgears feature arc extinction technology and dual-safety interlocking. Suitable for B2C home units and B2B industrial distribution centers.",
+      shortDesc: "High-breaking capacity circuit protection and distribution boards.",
+      desc: "Engineered for superior electrical safety, our switchgears feature arc extinction tech and safety interlocking. Ideal for B2C homes and B2B industrial hubs.",
       image: "product_switchgear.png"
     },
     {
       id: "prod-cp",
       name: "Industrial Control Panels",
-      shortDesc: "APFC, PLC, and MCC control panels built for heavy-duty industrial automation.",
-      desc: "Dust-proof and vermin-proof sheet enclosures housing high-grade contactors, thermal relays, and PLC units. Fully tested for temperature rise, dielectric strength, and short-circuit withstand.",
+      shortDesc: "APFC, PLC, and MCC panels built for industrial automation.",
+      desc: "Dust-proof sheet metal enclosures housing premium contactors and PLC units. Thoroughly tested for dielectric strength and short-circuit protection.",
       image: "product_panel.png"
     },
     {
       id: "prod-trans",
-      name: "Power & Distribution Transformers",
-      shortDesc: "Highly efficient copper-wound transformers with optimal cooling configurations.",
-      desc: "Low-loss transformers equipped with off-circuit tap changers, silica gel breathers, and safety pressure relief valves. Extends operational reliability for regional distribution grids.",
+      name: "Power Transformers",
+      shortDesc: "Efficient copper-wound transformers with optimal cooling setups.",
+      desc: "Low-loss copper-wound transformers equipped with off-circuit tap changers and safety pressure valves. Ensures outstanding power grid reliability.",
       image: "product_transformer.png"
     },
     {
       id: "prod-meters",
       name: "Energy Management Meters",
-      shortDesc: "Smart multi-function digital energy meters with Modbus communication.",
-      desc: "Precision Class 0.5S smart meters for real-time tracking of voltage, current, power factor, and harmonics. Ideal for building automation and industrial energy audits.",
+      shortDesc: "Smart multi-function digital meters with Modbus communication.",
+      desc: "Precision Class 0.5S smart meters for tracking voltage, power factor, and harmonics in real time. Perfect for industrial energy audits.",
       image: "product_meter.png"
     }
   ],
