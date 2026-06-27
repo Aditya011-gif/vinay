@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  ArrowRight, 
-  CheckCircle2, 
-  Menu, 
-  X, 
-  Zap, 
-  ShieldCheck, 
-  Award, 
-  Settings, 
-  Wrench, 
-  HeartHandshake, 
-  Users, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  ArrowRight,
+  CheckCircle2,
+  Menu,
+  X,
+  Zap,
+  ShieldCheck,
+  Award,
+  Settings,
+  Wrench,
+  HeartHandshake,
+  Users,
   ChevronRight,
   TrendingUp,
   Sliders,
@@ -33,15 +33,15 @@ import { CONFIG as DEFAULT_CONFIG } from './config';
 
 // Import Firebase connection
 import { db, isFirebaseEnabled } from './firebase';
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  collection, 
-  addDoc, 
-  deleteDoc, 
-  onSnapshot 
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  deleteDoc,
+  onSnapshot
 } from 'firebase/firestore';
 
 // Import Assets
@@ -195,22 +195,74 @@ function StatCounter({ target, suffix, duration = 2000 }) {
   );
 }
 
+// Premium vector emblem replica (A-shape, silver lightning bolt, and curved arch only)
+function AshokaEmblem({ width = "35", height = "32", mode = "light" }) {
+  const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
+
+  return (
+    <svg viewBox="0 0 120 110" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, display: 'block' }}>
+      <defs>
+        <linearGradient id="silver-bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#D1D5DB" />
+          <stop offset="100%" stopColor="#9CA3AF" />
+        </linearGradient>
+        <filter id="emblem-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="3.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.22" />
+        </filter>
+      </defs>
+
+      {/* Outer A shape with drop shadow (rounded inner cutout built-in, upper triangle filled solid) */}
+      <path
+        d="M 60 5 L 103 85 L 85 85 L 75 66 Q 60 63 45 66 L 35 85 L 17 85 Z"
+        fill={primaryColor}
+        filter="url(#emblem-shadow)"
+      />
+
+      {/* Silver metallic lightning bolt with exact shape and drop shadow */}
+      <path
+        d="M 72 28 L 45 56 L 62 56 L 42 82 L 73 48 L 57 48 Z"
+        fill="url(#silver-bolt-grad)"
+        stroke="#9CA3AF"
+        strokeWidth="0.5"
+        filter="url(#emblem-shadow)"
+      />
+
+      {/* Bottom curved tapered crescent arch with drop shadow */}
+      <path
+        d="M 10 102 Q 60 88 110 102 Q 60 92 10 102 Z"
+        fill={primaryColor}
+        filter="url(#emblem-shadow)"
+      />
+    </svg>
+  );
+}
+
 // Exact replica logo component matching user image (Vertical Stacked Layout)
 function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }) {
   const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
   const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
   const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
   const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
+  const bgClearColor = mode === "light" ? "#FFFFFF" : "#111827";
 
   return (
     <svg viewBox="0 0 400 360" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="silver-bolt-grad-vert" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#D1D5DB" />
+          <stop offset="100%" stopColor="#9CA3AF" />
+        </linearGradient>
+        <filter id="emblem-shadow-vert" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="5" stdDeviation="4" floodColor="#000000" floodOpacity="0.22" />
+        </filter>
+      </defs>
+
       {/* Emblem A */}
-      <path d="M 200 10 L 290 170 L 254 170 L 234 130 L 166 130 L 146 170 L 110 170 Z" fill={primaryColor} />
-      <path d="M 166 130 L 200 62 L 234 130 Z" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
-      {/* Silver lightning bolt */}
-      <path d="M 200 18 L 182 82 L 202 82 L 196 142 L 222 75 L 200 75 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="0.5" />
-      {/* Curved arch */}
-      <path d="M 80 185 C 160 162, 240 162, 320 185" stroke={primaryColor} strokeWidth="4" strokeLinecap="round" />
+      <path d="M 200 10 L 286 170 L 250 170 L 230 132 Q 200 126 170 132 L 150 170 L 114 170 Z" fill={primaryColor} filter="url(#emblem-shadow-vert)" />
+      <path d="M 224 56 L 170 112 L 204 112 L 176 164 L 226 96 L 194 96 Z" fill="url(#silver-bolt-grad-vert)" stroke="#9CA3AF" strokeWidth="0.5" filter="url(#emblem-shadow-vert)" />
+      <path d="M 60 208 Q 200 180 340 208 Q 200 188 60 208 Z" fill={primaryColor} filter="url(#emblem-shadow-vert)" />
 
       {/* ASHOKA Text */}
       {/* Letter A1 */}
@@ -245,16 +297,16 @@ function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }
 
       {/* PVT. LTD. Divider lines */}
       <line x1="70" y1="304" x2="148" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={bgClearColor} />
       <text x="200" y="309" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="14" fill={accentColor} textAnchor="middle" letterSpacing="0.08em">PVT. LTD.</text>
       <line x1="252" y1="304" x2="330" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={bgClearColor} />
 
       {/* Tagline */}
       <line x1="75" y1="324" x2="115" y2="324" stroke={primaryColor} strokeWidth="1.5" />
       <text x="200" y="328" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="9" fill={accentColor} textAnchor="middle" letterSpacing="0.04em">INNOVATION | POWER | SOLUTIONS</text>
       <line x1="285" y1="324" x2="325" y2="324" stroke={primaryColor} strokeWidth="1.5" />
-      
+
       {/* Underline base */}
       <line x1="70" y1="338" x2="330" y2="338" stroke={primaryColor} strokeWidth="1.2" />
     </svg>
@@ -267,14 +319,25 @@ function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light"
   const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
   const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
   const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
+  const bgClearColor = mode === "light" ? "#FFFFFF" : "#111827";
 
   return (
     <svg viewBox="0 0 290 60" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="silver-bolt-grad-horiz" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#D1D5DB" />
+          <stop offset="100%" stopColor="#9CA3AF" />
+        </linearGradient>
+        <filter id="emblem-shadow-horiz" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000000" floodOpacity="0.2" />
+        </filter>
+      </defs>
+
       {/* Emblem Left Side */}
-      <path d="M 25 3 L 47 43 L 38.5 43 L 33.5 33 L 16.5 33 L 11.5 43 L 3 43 Z" fill={primaryColor} />
-      <path d="M 16.5 33 L 25 15 L 33.5 33 Z" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
-      <path d="M 25 5 L 20 22 L 25 22 L 23.5 37 L 30.5 20 L 25 20 Z" fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="0.5" />
-      <path d="M 2 46 C 10 40, 40 40, 48 46" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" />
+      <path d="M 25 3 L 47 43 L 38.5 43 L 33.5 33 Q 25 31.5 16.5 33 L 11.5 43 L 3 43 Z" fill={primaryColor} filter="url(#emblem-shadow-horiz)" />
+      <path d="M 30 12 L 19 23 L 26 23 L 20 34 L 30 20 L 24 20 Z" fill="url(#silver-bolt-grad-horiz)" stroke="#9CA3AF" strokeWidth="0.5" filter="url(#emblem-shadow-horiz)" />
+      <path d="M 2 52 Q 25 45 48 52 Q 25 47 2 52 Z" fill={primaryColor} filter="url(#emblem-shadow-horiz)" />
 
       {/* ASHOKA text */}
       <path d="M 60 24 L 69 6 L 78 24 L 74.5 24 L 69 13.5 L 63.5 24 Z" fill={textColor} />
@@ -304,16 +367,16 @@ function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light"
 
       {/* PVT. LTD. flanking lines */}
       <line x1="183" y1="34" x2="197" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={bgClearColor} />
       <text x="215" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="7" fill={accentColor} textAnchor="middle" letterSpacing="0.05em">PVT. LTD.</text>
       <line x1="233" y1="34" x2="247" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={mode === "light" ? "#FFFFFF" : "#111827"} />
+      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={bgClearColor} />
 
       {/* Tagline */}
       <line x1="60" y1="45" x2="85" y2="45" stroke={primaryColor} strokeWidth="0.8" />
       <text x="135" y="48" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="700" fontSize="4.8" fill={accentColor} textAnchor="middle" letterSpacing="0.02em">INNOVATION | POWER | SOLUTIONS</text>
       <line x1="185" y1="45" x2="210" y2="45" stroke={primaryColor} strokeWidth="0.8" />
-      
+
       {/* Underline base */}
       <line x1="60" y1="52" x2="210" y2="52" stroke={primaryColor} strokeWidth="0.8" />
     </svg>
@@ -367,7 +430,7 @@ function App() {
         ...DEFAULT_CONFIG,
         ...loadedData,
         certifications: loadedData.certifications && loadedData.certifications.length > 0
-          ? loadedData.certifications 
+          ? loadedData.certifications
           : (DEFAULT_CONFIG.certifications || [])
       };
     };
@@ -464,14 +527,14 @@ function App() {
     const handleHashChange = () => {
       const hash = window.location.hash;
       let page = 'home';
-      
+
       // Handle same-page scrolling hooks
       if (hash.startsWith('#/#')) {
         const id = hash.slice(3);
         page = 'home';
         setCurrentPage(page);
         setIsMobileMenuOpen(false);
-        
+
         setTimeout(() => {
           const el = document.getElementById(id);
           if (el) {
@@ -480,12 +543,12 @@ function App() {
         }, 100);
         return;
       }
-      
+
       if (hash.startsWith('#/')) {
         page = hash.slice(2);
       }
       if (!page) page = 'home';
-      
+
       setCurrentPage(page);
       setIsMobileMenuOpen(false);
       window.scrollTo(0, 0);
@@ -531,7 +594,7 @@ function App() {
   // Submit enquiry to Gmail (Web3Forms) AND save to Firestore Database
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    
+
     const newEntry = {
       fullName: formData.fullName,
       businessName: formData.businessName,
@@ -605,7 +668,7 @@ function App() {
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
     if (!feedbackData.client || !feedbackData.text) return;
-    
+
     const newReview = {
       client: feedbackData.client,
       company: feedbackData.company || "Independent Buyer",
@@ -891,9 +954,9 @@ function App() {
             </span>
           </div>
           <div className="top-bar-links">
-            <a 
-              href="/company_profile.pdf" 
-              className="top-bar-link" 
+            <a
+              href="/company_profile.pdf"
+              className="top-bar-link"
               download="Ashoka_Power_Matrix_Profile.pdf"
             >
               <FileDown size={14} />
@@ -909,14 +972,14 @@ function App() {
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
           <a href="#/" className="logo-container" style={{ textDecoration: 'none' }}>
-            <AshokaLogoHorizontal width="210px" mode="light" />
+            <AshokaLogoHorizontal width="260px" mode="light" />
           </a>
 
           {/* Desktop Nav */}
           <nav className="nav">
             {navLinks.map((link, idx) => {
-              const isActive = (currentPage === 'home' && (link.path === '#/' || link.path.startsWith('#/#'))) || 
-                               (link.path !== '#/' && !link.path.startsWith('#/#') && currentPage === link.path.slice(2));
+              const isActive = (currentPage === 'home' && (link.path === '#/' || link.path.startsWith('#/#'))) ||
+                (link.path !== '#/' && !link.path.startsWith('#/#') && currentPage === link.path.slice(2));
               return (
                 <a key={idx} href={link.path} className={`nav-link ${isActive ? 'active' : ''}`}>
                   {link.label}
@@ -926,7 +989,7 @@ function App() {
           </nav>
 
           {/* Hamburger Menu Toggle */}
-          <button 
+          <button
             className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation menu"
@@ -941,18 +1004,18 @@ function App() {
       {/* Mobile Navigation Drawer */}
       <div className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
         {navLinks.map((link, idx) => (
-          <a 
+          <a
             key={idx}
-            href={link.path} 
-            className="mobile-nav-link" 
+            href={link.path}
+            className="mobile-nav-link"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             {link.label}
           </a>
         ))}
-        <a 
-          href="/company_profile.pdf" 
-          className="mobile-nav-link" 
+        <a
+          href="/company_profile.pdf"
+          className="mobile-nav-link"
           download="Ashoka_Power_Matrix_Profile.pdf"
           style={{ fontSize: '1.2rem', color: 'var(--accent)', marginTop: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}
           onClick={() => setIsMobileMenuOpen(false)}
@@ -969,10 +1032,10 @@ function App() {
             {/* Hero Section */}
             <section id="home" className="hero-page">
               <div className="hero-overlay"></div>
-              <img 
-                className="hero-bg" 
-                src={heroBg} 
-                alt="Ashoka Power Matrix Manufacturing Plant" 
+              <img
+                className="hero-bg"
+                src={heroBg}
+                alt="Ashoka Power Matrix Manufacturing Plant"
                 loading="eager"
               />
               <div className="container hero-container">
@@ -985,8 +1048,8 @@ function App() {
                       Explore Products
                       <ArrowRight size={16} />
                     </a>
-                    <a 
-                      href="/company_profile.pdf" 
+                    <a
+                      href="/company_profile.pdf"
                       className="btn btn-secondary"
                       download="Ashoka_Power_Matrix_Profile.pdf"
                       style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
@@ -1123,8 +1186,8 @@ function App() {
                   <a href="#/dealer" className="btn btn-primary">
                     Join Our Dealer Network
                   </a>
-                  <a 
-                    href="/company_profile.pdf" 
+                  <a
+                    href="/company_profile.pdf"
                     className="btn btn-secondary"
                     download="Ashoka_Power_Matrix_Profile.pdf"
                   >
@@ -1176,24 +1239,24 @@ function App() {
               {siteConfig.products.map((p) => (
                 <div key={p.id} className="product-card">
                   <div className="product-img-wrapper">
-                    <img 
-                      className="product-img" 
-                      src={getProductImageSrc(p.image)} 
-                      alt={p.name} 
-                      loading="lazy" 
+                    <img
+                      className="product-img"
+                      src={getProductImageSrc(p.image)}
+                      alt={p.name}
+                      loading="lazy"
                     />
                   </div>
                   <div className="product-info">
                     <h3>{p.name}</h3>
                     <p>{p.shortDesc}</p>
                     <div className="product-actions">
-                      <button 
+                      <button
                         className="btn btn-primary"
                         onClick={() => handleEnquireProduct(p.name)}
                       >
                         Request Quote
                       </button>
-                      <button 
+                      <button
                         className="btn btn-secondary"
                         onClick={() => handleLearnMore(p)}
                       >
@@ -1210,7 +1273,7 @@ function App() {
               <div className="feedback-card">
                 <h3>Share Your Experience</h3>
                 <p>We value your business feedback! Let us know how our transformers, switchgears, or meters have performed in your grids or facilities.</p>
-                
+
                 {isFeedbackSubmitted && (
                   <div className="form-success-msg">
                     <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
@@ -1219,42 +1282,42 @@ function App() {
                     </div>
                   </div>
                 )}
-                
+
                 <form onSubmit={handleFeedbackSubmit}>
                   <div className="form-group-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="feedClient">Your Name</label>
-                      <input 
-                        type="text" 
-                        id="feedClient" 
-                        value={feedbackData.client} 
+                      <input
+                        type="text"
+                        id="feedClient"
+                        value={feedbackData.client}
                         onChange={(e) => setFeedbackData({ ...feedbackData, client: e.target.value })}
-                        className="form-input" 
-                        required 
+                        className="form-input"
+                        required
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="feedComp">Company / Position</label>
-                      <input 
-                        type="text" 
-                        id="feedComp" 
-                        value={feedbackData.company} 
+                      <input
+                        type="text"
+                        id="feedComp"
+                        value={feedbackData.company}
                         onChange={(e) => setFeedbackData({ ...feedbackData, company: e.target.value })}
-                        className="form-input" 
-                        required 
+                        className="form-input"
+                        required
                       />
                     </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="feedTxt">Your Testimonial / Feedback</label>
-                    <textarea 
-                      id="feedTxt" 
-                      value={feedbackData.text} 
+                    <textarea
+                      id="feedTxt"
+                      value={feedbackData.text}
                       onChange={(e) => setFeedbackData({ ...feedbackData, text: e.target.value })}
-                      className="form-input" 
+                      className="form-input"
                       placeholder="Write your review here..."
                       style={{ minHeight: '80px' }}
-                      required 
+                      required
                     />
                   </div>
                   <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1295,7 +1358,7 @@ function App() {
                         <path d="M 42 58 L 35 88 L 50 80 L 65 88 L 58 58" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round" />
                         <path d="M 50 58 L 50 80" stroke="currentColor" strokeWidth="1.5" />
                       </svg>
-                      
+
                       <span style={{ display: 'block', fontSize: '0.64rem', letterSpacing: '0.15em', color: 'var(--text-light)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '6px' }}>
                         Certificate
                       </span>
@@ -1439,91 +1502,91 @@ function App() {
                   <div className="form-group-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="fullName">Full Name</label>
-                      <input 
-                        type="text" 
-                        id="fullName" 
-                        name="fullName" 
-                        value={formData.fullName} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="businessName">Business Name</label>
-                      <input 
-                        type="text" 
-                        id="businessName" 
-                        name="businessName" 
-                        value={formData.businessName} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="text"
+                        id="businessName"
+                        name="businessName"
+                        value={formData.businessName}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                   </div>
                   <div className="form-group-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="email">Email Address</label>
-                      <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value={formData.email} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="phone">Phone Number</label>
-                      <input 
-                        type="tel" 
-                        id="phone" 
-                        name="phone" 
-                        value={formData.phone} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                   </div>
                   <div className="form-group-row">
                     <div className="form-group">
                       <label className="form-label" htmlFor="city">City</label>
-                      <input 
-                        type="text" 
-                        id="city" 
-                        name="city" 
-                        value={formData.city} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="state">State</label>
-                      <input 
-                        type="text" 
-                        id="state" 
-                        name="state" 
-                        value={formData.state} 
-                        onChange={handleInputChange} 
-                        className="form-input" 
-                        required 
+                      <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        className="form-input"
+                        required
                       />
                     </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="message">Your Message</label>
-                    <textarea 
-                      id="message" 
-                      name="message" 
-                      value={formData.message} 
-                      onChange={handleInputChange} 
-                      className="form-input" 
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      className="form-input"
                       placeholder="Briefly describe your distribution experience..."
-                      required 
+                      required
                     />
                   </div>
                   <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
@@ -1532,12 +1595,12 @@ function App() {
                 </form>
               </div>
               <div className="map-wrapper">
-                <iframe 
-                  className="map-iframe" 
+                <iframe
+                  className="map-iframe"
                   title="Company Location Map"
-                  src={siteConfig.contact.googleMapsEmbedUrl} 
-                  allowFullScreen="" 
-                  loading="lazy" 
+                  src={siteConfig.contact.googleMapsEmbedUrl}
+                  allowFullScreen=""
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
               </div>
@@ -1571,16 +1634,16 @@ function App() {
               <div className="contact-card">
                 <div className="contact-card-icon">
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style={{ verticalAlign: 'middle' }}>
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.455L0 24zm6.59-4.846c1.66.988 3.278 1.477 4.947 1.478 5.353 0 9.709-4.316 9.712-9.623.003-2.571-1.002-4.99-2.83-6.815-1.829-1.826-4.26-2.831-6.834-2.832-5.36 0-9.723 4.318-9.726 9.626-.001 1.848.5 3.57 1.448 5.09l-.497 1.815 1.874-.488zm13.167-9.527c-.247-.124-1.464-.722-1.691-.805-.226-.082-.39-.124-.555.124-.166.247-.64.805-.784.969-.144.166-.29.185-.536.062-.247-.125-.989-.365-1.884-1.161-.696-.621-1.166-1.389-1.303-1.616-.137-.227-.015-.35.11-.473.112-.11.247-.29.37-.435.124-.144.166-.247.247-.412.082-.166.041-.31-.02-.433-.062-.124-.555-1.34-.76-1.834-.199-.48-.403-.415-.555-.422-.144-.006-.31-.008-.474-.008-.166 0-.433.062-.66.31-.227.247-.866.845-.866 2.062 0 1.216.887 2.392.989 2.536.103.144 1.747 2.667 4.233 3.738.59.255 1.052.408 1.41.521.594.19 1.135.163 1.56.1.475-.07 1.464-.6 1.671-1.178.207-.58.207-1.072.144-1.178-.063-.106-.227-.168-.475-.293z"/>
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.455L0 24zm6.59-4.846c1.66.988 3.278 1.477 4.947 1.478 5.353 0 9.709-4.316 9.712-9.623.003-2.571-1.002-4.99-2.83-6.815-1.829-1.826-4.26-2.831-6.834-2.832-5.36 0-9.723 4.318-9.726 9.626-.001 1.848.5 3.57 1.448 5.09l-.497 1.815 1.874-.488zm13.167-9.527c-.247-.124-1.464-.722-1.691-.805-.226-.082-.39-.124-.555.124-.166.247-.64.805-.784.969-.144.166-.29.185-.536.062-.247-.125-.989-.365-1.884-1.161-.696-.621-1.166-1.389-1.303-1.616-.137-.227-.015-.35.11-.473.112-.11.247-.29.37-.435.124-.144.166-.247.247-.412.082-.166.041-.31-.02-.433-.062-.124-.555-1.34-.76-1.834-.199-.48-.403-.415-.555-.422-.144-.006-.31-.008-.474-.008-.166 0-.433.062-.66.31-.227.247-.866.845-.866 2.062 0 1.216.887 2.392.989 2.536.103.144 1.747 2.667 4.233 3.738.59.255 1.052.408 1.41.521.594.19 1.135.163 1.56.1.475-.07 1.464-.6 1.671-1.178.207-.58.207-1.072.144-1.178-.063-.106-.227-.168-.475-.293z" />
                   </svg>
                 </div>
                 <div className="contact-card-content">
                   <h3>WhatsApp Us</h3>
                   <p>Instant messaging for fast support and technical catalogue shares:</p>
-                  <a 
-                    href={`https://wa.me/91${siteConfig.contact.whatsapp}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={`https://wa.me/91${siteConfig.contact.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="whatsapp-link"
                   >
                     Chat on WhatsApp
@@ -1635,24 +1698,24 @@ function App() {
                   <form onSubmit={handleAdminLogin}>
                     <div className="form-group">
                       <label className="form-label" htmlFor="adminUser">Username</label>
-                      <input 
-                        type="text" 
-                        id="adminUser" 
+                      <input
+                        type="text"
+                        id="adminUser"
                         value={adminUsername}
                         onChange={(e) => setAdminUsername(e.target.value)}
-                        className="form-input" 
-                        required 
+                        className="form-input"
+                        required
                       />
                     </div>
                     <div className="form-group">
                       <label className="form-label" htmlFor="adminPass">Password</label>
-                      <input 
-                        type="password" 
-                        id="adminPass" 
+                      <input
+                        type="password"
+                        id="adminPass"
                         value={adminPassword}
                         onChange={(e) => setAdminPassword(e.target.value)}
-                        className="form-input" 
-                        required 
+                        className="form-input"
+                        required
                       />
                     </div>
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
@@ -1681,56 +1744,56 @@ function App() {
                     )}
                   </div>
 
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'queries' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('queries')}
                   >
                     <FolderOpen size={16} />
                     Dealer Queries ({queries.length})
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'branding' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('branding')}
                   >
                     <Settings size={16} />
                     Branding & Contacts
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'products' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('products')}
                   >
                     <Sliders size={16} />
                     Products CMS
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'services' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('services')}
                   >
                     <Wrench size={16} />
                     Services CMS
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'team' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('team')}
                   >
                     <Users size={16} />
                     Team CMS
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'testimonials' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('testimonials')}
                   >
                     <HeartHandshake size={16} />
                     Testimonials
                   </button>
-                  <button 
+                  <button
                     className={`admin-sidebar-btn ${adminActiveTab === 'certifications' ? 'active' : ''}`}
                     onClick={() => setAdminActiveTab('certifications')}
                   >
                     <Award size={16} />
                     Certifications CMS
                   </button>
-                  <button 
+                  <button
                     style={{ marginTop: '24px', backgroundColor: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' }}
                     className="admin-sidebar-btn"
                     onClick={handleAdminLogout}
@@ -1789,22 +1852,22 @@ function App() {
                                 </td>
                                 <td>
                                   <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button 
-                                      className="btn btn-secondary" 
+                                    <button
+                                      className="btn btn-secondary"
                                       style={{ padding: '4px 8px', fontSize: '0.75rem' }}
                                       onClick={() => setSelectedQuery(q)}
                                     >
                                       <Eye size={12} />
                                     </button>
-                                    <button 
-                                      className="btn btn-primary" 
+                                    <button
+                                      className="btn btn-primary"
                                       style={{ padding: '4px 8px', fontSize: '0.75rem', backgroundColor: q.status === 'Pending' ? '#059669' : '#4B5563', borderColor: q.status === 'Pending' ? '#059669' : '#4B5563' }}
                                       onClick={() => handleToggleQueryStatus(q.id)}
                                     >
                                       Check
                                     </button>
-                                    <button 
-                                      className="btn" 
+                                    <button
+                                      className="btn"
                                       style={{ padding: '4px 8px', fontSize: '0.75rem', color: '#dc2626', border: '1px solid #dc2626' }}
                                       onClick={() => handleDeleteQuery(q.id)}
                                     >
@@ -1833,15 +1896,15 @@ function App() {
                         <h2>Branding & Contact Info</h2>
                         <button type="submit" className="btn btn-primary">Save Changes</button>
                       </div>
-                      
+
                       {/* Web3Forms Access Key Field */}
                       <div className="form-group" style={{ backgroundColor: 'var(--section-bg)', padding: '16px', border: '1px solid var(--border)', borderRadius: '4px', marginBottom: '20px' }}>
                         <label className="form-label" style={{ fontWeight: '700', color: 'var(--primary)' }}>Web3Forms Access Key (For Gmail Delivery)</label>
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           value={editedConfig.web3formsKey || ''}
                           onChange={(e) => setEditedConfig({ ...editedConfig, web3formsKey: e.target.value })}
-                          className="form-input" 
+                          className="form-input"
                           style={{ marginTop: '6px' }}
                           placeholder="e.g. 1a2b3c4d-5e6f-..."
                         />
@@ -1853,120 +1916,120 @@ function App() {
                       <div className="admin-form-grid">
                         <div className="form-group">
                           <label className="form-label">Company Name</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.company.name} 
+                          <input
+                            type="text"
+                            value={editedConfig.company.name}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               company: { ...editedConfig.company, name: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">ISO Certification Tag</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.company.certification} 
+                          <input
+                            type="text"
+                            value={editedConfig.company.certification}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               company: { ...editedConfig.company, certification: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Phone Primary</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.contact.phone} 
+                          <input
+                            type="text"
+                            value={editedConfig.contact.phone}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               contact: { ...editedConfig.contact, phone: e.target.value, phoneDisplay: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Phone Secondary (ISO Bar)</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.contact.phoneSecondary} 
+                          <input
+                            type="text"
+                            value={editedConfig.contact.phoneSecondary}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               contact: { ...editedConfig.contact, phoneSecondary: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Email Address</label>
-                          <input 
-                            type="email" 
-                            value={editedConfig.contact.email} 
+                          <input
+                            type="email"
+                            value={editedConfig.contact.email}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               contact: { ...editedConfig.contact, email: e.target.value, salesEmail: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Logo Text Header</label>
-                          <input 
-                            type="text" 
-                            value={editedConfig.company.logoText} 
+                          <input
+                            type="text"
+                            value={editedConfig.company.logoText}
                             onChange={(e) => setEditedConfig({
                               ...editedConfig,
                               company: { ...editedConfig.company, logoText: e.target.value }
                             })}
-                            className="form-input" 
-                            required 
+                            className="form-input"
+                            required
                           />
                         </div>
                       </div>
                       <div className="form-group">
                         <label className="form-label">Brand Tagline</label>
-                        <input 
-                          type="text" 
-                          value={editedConfig.company.tagline} 
+                        <input
+                          type="text"
+                          value={editedConfig.company.tagline}
                           onChange={(e) => setEditedConfig({
                             ...editedConfig,
                             company: { ...editedConfig.company, tagline: e.target.value }
                           })}
-                          className="form-input" 
-                          required 
+                          className="form-input"
+                          required
                         />
                       </div>
                       <div className="form-group">
                         <label className="form-label">Registered Office Address</label>
-                        <input 
-                          type="text" 
-                          value={editedConfig.contact.address} 
+                        <input
+                          type="text"
+                          value={editedConfig.contact.address}
                           onChange={(e) => setEditedConfig({
                             ...editedConfig,
                             contact: { ...editedConfig.contact, address: e.target.value }
                           })}
-                          className="form-input" 
-                          required 
+                          className="form-input"
+                          required
                         />
                       </div>
                       <div className="form-group">
                         <label className="form-label">Google Map Embed Link</label>
-                        <input 
-                          type="text" 
-                          value={editedConfig.contact.googleMapsEmbedUrl} 
+                        <input
+                          type="text"
+                          value={editedConfig.contact.googleMapsEmbedUrl}
                           onChange={(e) => setEditedConfig({
                             ...editedConfig,
                             contact: { ...editedConfig.contact, googleMapsEmbedUrl: e.target.value }
                           })}
-                          className="form-input" 
-                          required 
+                          className="form-input"
+                          required
                         />
                       </div>
                     </form>
@@ -1985,9 +2048,9 @@ function App() {
                           {siteConfig.products.map(p => (
                             <div key={p.id} className="admin-list-item">
                               <div className="admin-list-info" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <img 
-                                  src={getProductImageSrc(p.image)} 
-                                  alt="" 
+                                <img
+                                  src={getProductImageSrc(p.image)}
+                                  alt=""
                                   style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '2px', border: '1px solid var(--border)' }}
                                 />
                                 <div>
@@ -1995,8 +2058,8 @@ function App() {
                                   <p style={{ margin: 0 }}>{p.shortDesc}</p>
                                 </div>
                               </div>
-                              <button 
-                                className="btn" 
+                              <button
+                                className="btn"
                                 style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
                                 onClick={() => handleDeleteProduct(p.id)}
                               >
@@ -2013,22 +2076,22 @@ function App() {
                         <div className="admin-form-grid" style={{ marginTop: '16px' }}>
                           <div className="form-group">
                             <label className="form-label">Product Name</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newProduct.name}
                               onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">Short Description</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newProduct.shortDesc}
                               onChange={(e) => setNewProduct({ ...newProduct, shortDesc: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                         </div>
@@ -2039,11 +2102,11 @@ function App() {
                           <label className="file-upload-input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                             <Upload size={16} />
                             {newProduct.image.startsWith('data:image') ? '✓ Custom Image Selected' : 'Choose Local Image file...'}
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              style={{ display: 'none' }} 
-                              onChange={handleProductImageUpload} 
+                            <input
+                              type="file"
+                              accept="image/*"
+                              style={{ display: 'none' }}
+                              onChange={handleProductImageUpload}
                             />
                           </label>
                           {newProduct.image.startsWith('data:image') && (
@@ -2056,12 +2119,12 @@ function App() {
 
                         <div className="form-group" style={{ marginTop: '16px' }}>
                           <label className="form-label">Detailed Description</label>
-                          <textarea 
+                          <textarea
                             value={newProduct.desc}
                             onChange={(e) => setNewProduct({ ...newProduct, desc: e.target.value })}
-                            className="form-input" 
+                            className="form-input"
                             style={{ minHeight: '80px' }}
-                            required 
+                            required
                           />
                         </div>
                         <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2084,12 +2147,12 @@ function App() {
                             <h4 style={{ color: 'var(--primary)', marginBottom: '10px' }}>{s.title}</h4>
                             <div className="form-group">
                               <label className="form-label">Service Description</label>
-                              <textarea 
-                                value={s.description} 
+                              <textarea
+                                value={s.description}
                                 onChange={(e) => handleServiceChange(idx, 'description', e.target.value)}
-                                className="form-input" 
+                                className="form-input"
                                 style={{ minHeight: '60px' }}
-                                required 
+                                required
                               />
                             </div>
                           </div>
@@ -2114,8 +2177,8 @@ function App() {
                                 <h4>{t.name}</h4>
                                 <p>{t.role}</p>
                               </div>
-                              <button 
-                                className="btn" 
+                              <button
+                                className="btn"
                                 style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
                                 onClick={() => handleDeleteTeam(t.name)}
                               >
@@ -2132,33 +2195,33 @@ function App() {
                         <div className="admin-form-grid" style={{ marginTop: '16px' }}>
                           <div className="form-group">
                             <label className="form-label">Member Name</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newTeam.name}
                               onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">Designation Role</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newTeam.role}
                               onChange={(e) => setNewTeam({ ...newTeam, role: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                         </div>
                         <div className="form-group">
                           <label className="form-label">Short Biography</label>
-                          <textarea 
+                          <textarea
                             value={newTeam.bio}
                             onChange={(e) => setNewTeam({ ...newTeam, bio: e.target.value })}
-                            className="form-input" 
+                            className="form-input"
                             style={{ minHeight: '60px' }}
-                            required 
+                            required
                           />
                         </div>
                         <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2185,8 +2248,8 @@ function App() {
                                 <h4>{t.client}</h4>
                                 <p>{t.company}</p>
                               </div>
-                              <button 
-                                className="btn" 
+                              <button
+                                className="btn"
                                 style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
                                 onClick={() => handleDeleteTestimonial(t.client)}
                               >
@@ -2203,33 +2266,33 @@ function App() {
                         <div className="admin-form-grid" style={{ marginTop: '16px' }}>
                           <div className="form-group">
                             <label className="form-label">Client Name</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newTestimonial.client}
                               onChange={(e) => setNewTestimonial({ ...newTestimonial, client: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">Client Company Name</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newTestimonial.company}
                               onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                         </div>
                         <div className="form-group">
                           <label className="form-label">Review Quotation Text</label>
-                          <textarea 
+                          <textarea
                             value={newTestimonial.text}
                             onChange={(e) => setNewTestimonial({ ...newTestimonial, text: e.target.value })}
-                            className="form-input" 
+                            className="form-input"
                             style={{ minHeight: '60px' }}
-                            required 
+                            required
                           />
                         </div>
                         <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2246,7 +2309,7 @@ function App() {
                         <h2>Certifications CMS</h2>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Manage Quality Credentials</span>
                       </div>
-                      
+
                       {/* Certifications List */}
                       <div style={{ marginBottom: '40px' }}>
                         <h3>Active Credentials</h3>
@@ -2257,8 +2320,8 @@ function App() {
                                 <h4>{c.title}</h4>
                                 <p>{c.authority} — {c.docNumber}</p>
                               </div>
-                              <button 
-                                className="btn" 
+                              <button
+                                className="btn"
                                 style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
                                 onClick={() => handleDeleteCertification(c.id)}
                               >
@@ -2275,44 +2338,44 @@ function App() {
                         <div className="admin-form-grid" style={{ marginTop: '16px' }}>
                           <div className="form-group">
                             <label className="form-label">Certificate Title</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newCertification.title}
                               onChange={(e) => setNewCertification({ ...newCertification, title: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                           <div className="form-group">
                             <label className="form-label">Authority / Agency</label>
-                            <input 
-                              type="text" 
+                            <input
+                              type="text"
                               value={newCertification.authority}
                               onChange={(e) => setNewCertification({ ...newCertification, authority: e.target.value })}
-                              className="form-input" 
-                              required 
+                              className="form-input"
+                              required
                             />
                           </div>
                         </div>
                         <div className="form-group">
                           <label className="form-label">Document / Report Number</label>
-                          <input 
-                            type="text" 
+                          <input
+                            type="text"
                             value={newCertification.docNumber}
                             onChange={(e) => setNewCertification({ ...newCertification, docNumber: e.target.value })}
-                            className="form-input" 
+                            className="form-input"
                             placeholder="e.g. Cert No. ISO-9001 / Test Report CPRI-88"
-                            required 
+                            required
                           />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Description / Scope of Audit</label>
-                          <textarea 
+                          <textarea
                             value={newCertification.desc}
                             onChange={(e) => setNewCertification({ ...newCertification, desc: e.target.value })}
-                            className="form-input" 
+                            className="form-input"
                             style={{ minHeight: '60px' }}
-                            required 
+                            required
                           />
                         </div>
                         <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2334,7 +2397,7 @@ function App() {
         <div className="container footer-top">
           <div className="footer-about">
             <div style={{ marginBottom: '16px' }}>
-              <AshokaLogoVertical width="160px" mode="dark" />
+              <AshokaLogoVertical width="200px" mode="dark" />
             </div>
             <p>Providing cutting edge B2B power systems, heavy machinery units, smart grid switchboards, and domestic safety systems across India.</p>
             <div className="social-links">
@@ -2379,8 +2442,8 @@ function App() {
         </div>
         <div className="container footer-bottom">
           <div>
-            &copy; {new Date().getFullYear()} {siteConfig.company.name}. All rights reserved. 
-            <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span> 
+            &copy; {new Date().getFullYear()} {siteConfig.company.name}. All rights reserved.
+            <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
             <a href="#/admin" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Admin Desk</a>
           </div>
           <div className="footer-legal-links">
@@ -2402,24 +2465,24 @@ function App() {
             </div>
             <div className="modal-body">
               <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '4px', marginBottom: '16px', backgroundColor: '#f3f4f6' }}>
-                <img 
-                  src={getProductImageSrc(selectedProduct.image)} 
-                  alt={selectedProduct.name} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                <img
+                  src={getProductImageSrc(selectedProduct.image)}
+                  alt={selectedProduct.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
               <p style={{ fontSize: '0.98rem', marginBottom: '20px', lineHeight: '1.5' }}>
                 {selectedProduct.desc}
               </p>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={() => handleEnquireProduct(selectedProduct.name)}
                 >
                   Request Quote
                 </button>
-                <a 
-                  href={`tel:${siteConfig.contact.phone}`} 
+                <a
+                  href={`tel:${siteConfig.contact.phone}`}
                   className="btn btn-secondary"
                 >
                   <Phone size={13} />
@@ -2479,13 +2542,13 @@ function App() {
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
-                <button 
+                <button
                   className="btn btn-primary"
                   onClick={() => handleToggleQueryStatus(selectedQuery.id)}
                 >
                   Toggle Status (Pending / Reviewed)
                 </button>
-                <button 
+                <button
                   className="btn btn-secondary"
                   onClick={() => setSelectedQuery(null)}
                 >
