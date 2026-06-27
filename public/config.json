@@ -1,0 +1,211 @@
+{
+  "company": {
+    "name": "Ashoka Power Matrix Pvt. Ltd.",
+    "shortName": "Ashoka Power Matrix",
+    "logoText": "Ashoka",
+    "logoAccent": "Power Matrix",
+    "tagline": "Innovation / Power / Solutions.",
+    "certification": "ISO 9001:2015 Certified Company"
+  },
+  "contact": {
+    "phone": "9991688804",
+    "phoneDisplay": "+91 99916 88804",
+    "phoneSecondary": "+91 98989 18554",
+    "whatsapp": "9991688804",
+    "whatsappDisplay": "+91 99916 88804",
+    "email": "info@ashokapowermatrix.com",
+    "salesEmail": "sales@ashokapowermatrix.com",
+    "address": "Khasra No. 550/1, Village Rithala, Delhi - 110085, India",
+    "businessHours": "Monday - Saturday: 9:00 AM - 6:00 PM (Closed on Sundays)",
+    "googleMapsEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3498.4116568285554!2d77.10651847636668!3d28.70720497562817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d03c37d451b69%3A0xe543e3ffc1c1f513!2sRithala%2C%20Rohini%2C%20Delhi%2C%20110085!5e0!3m2!1sen!2sin!4v1719460000000!5m2!1sen!2sin"
+  },
+  "socials": {
+    "linkedin": "https://linkedin.com/company/ashoka-power-matrix",
+    "facebook": "https://facebook.com/ashokapowermatrix",
+    "youtube": "https://youtube.com/ashokapower",
+    "instagram": "https://instagram.com/ashokapowermatrix"
+  },
+  "stats": [
+    {
+      "value": 25,
+      "suffix": "+",
+      "label": "Years of Excellence"
+    },
+    {
+      "value": 1000,
+      "suffix": "+",
+      "label": "Happy Customers"
+    },
+    {
+      "value": 5000,
+      "suffix": "+",
+      "label": "Products Delivered"
+    },
+    {
+      "value": 500,
+      "suffix": "+",
+      "label": "Dealers Network"
+    },
+    {
+      "value": 24,
+      "suffix": "/7",
+      "label": "Technical Support"
+    }
+  ],
+  "industries": [
+    {
+      "name": "State Utilities",
+      "desc": "Equipping state electrical boards and regional distribution grids with heavy-duty switchgears."
+    },
+    {
+      "name": "Industries",
+      "desc": "Turnkey control panels and power distribution setups for heavy production factories."
+    },
+    {
+      "name": "Renewable Energy",
+      "desc": "Specialized transformers and metering panels optimized for solar parks and wind energy grids."
+    },
+    {
+      "name": "Commercial Buildings",
+      "desc": "Compact distribution panels and APFC units built for corporate parks and shopping malls."
+    },
+    {
+      "name": "Railways",
+      "desc": "High-grade copper wound potential transformers for train electrification lines."
+    },
+    {
+      "name": "EPC Contractors",
+      "desc": "Reliable OEM designs and bulk accessories supply for turn-key construction contractors."
+    }
+  ],
+  "services": [
+    {
+      "id": "srv-mfg",
+      "title": "Electrical Manufacturing",
+      "description": "High-precision production of premium switchgears, distribution boards, and heavy-duty electrical components."
+    },
+    {
+      "id": "srv-ind",
+      "title": "Industrial Solutions",
+      "description": "End-to-end turnkey power distribution layouts designed for high-voltage industrial plants and factories."
+    },
+    {
+      "id": "srv-oem",
+      "title": "OEM Manufacturing",
+      "description": "Scalable original equipment manufacturing services tailored to national and international brand specifications."
+    },
+    {
+      "id": "srv-cust",
+      "title": "Custom Products",
+      "description": "Bespoke engineering for custom control panels, distribution boards, and distinct busway configurations."
+    },
+    {
+      "id": "srv-tech",
+      "title": "Technical Support",
+      "description": "Dedicated expert guidance for installation, load calculations, and commissioning."
+    },
+    {
+      "id": "srv-sales",
+      "title": "After Sales Support",
+      "description": "Prompt troubleshooting, comprehensive AMC services, and original spares supply."
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-ct",
+      "name": "Current Transformers (CTs)",
+      "shortDesc": "Wide range of CTs for metering and protection applications.",
+      "desc": "Engineered for precise step-down current measurement, our current transformers are built for both commercial metering and protection systems, withstanding extreme short-circuit impacts.",
+      "image": "product_switchgear.png"
+    },
+    {
+      "id": "prod-pt",
+      "name": "Potential Transformers (PTs)",
+      "shortDesc": "Reliable PTs for accurate voltage measurement.",
+      "desc": "High-accuracy voltage potential transformers designed to safely step down high transmission line voltage levels for voltmeter and relay protection circuits.",
+      "image": "product_transformer.png"
+    },
+    {
+      "id": "prod-metering",
+      "name": "Metering Solutions",
+      "shortDesc": "Advanced metering solutions for energy management.",
+      "desc": "Smart digital energy meters and modular metering panels featuring Modbus and RS485 communication protocols for real-time energy audits and building management.",
+      "image": "product_meter.png"
+    },
+    {
+      "id": "prod-panels",
+      "name": "Control Panels",
+      "shortDesc": "Custom control panels for safe & efficient operations.",
+      "desc": "APFC, MCC, and PLC automation panel assemblies built inside vermin-proof sheet enclosures. Thoroughly audited for temperature rise and insulation safety.",
+      "image": "product_panel.png"
+    },
+    {
+      "id": "prod-acc",
+      "name": "Accessories",
+      "shortDesc": "High quality accessories for installation.",
+      "desc": "Heavy-duty copper busbars, insulators, wire shrouds, and terminal connectors built to standard specs for safe, clean electrical installations.",
+      "image": "product_switchgear.png"
+    }
+  ],
+  "team": [
+    {
+      "name": "Mr. Ashoke Kumar",
+      "role": "Managing Director & Founder",
+      "bio": "25+ years of engineering leadership in high-voltage power components."
+    },
+    {
+      "name": "Dr. Rajeev Sharma",
+      "role": "Chief Technical Officer",
+      "bio": "PhD in Smart Grid Architectures. Leads control panel and PLC development."
+    },
+    {
+      "name": "Mrs. Neha Gupta",
+      "role": "Head of Quality Compliance",
+      "bio": "Lead auditor certified for international ISO 9001:2015 safety guidelines."
+    }
+  ],
+  "testimonials": [
+    {
+      "client": "Vikram Singh",
+      "company": "L&T Construction",
+      "text": "Ashoka's Potential Transformers have been outstanding in our regional grid systems. Highly reliable and IEC compliant."
+    },
+    {
+      "client": "Amit Shah",
+      "company": "Tata Power Project Desk",
+      "text": "We have sourced modular metering and CTs for multiple substation upgrades. Outstanding build quality and 24/7 engineering support."
+    },
+    {
+      "client": "Suresh Nair",
+      "company": "SolarGrid India",
+      "text": "Their custom control panels were delivered on time with perfect dielectric insulation audits. Highly recommend their OEM line."
+    }
+  ],
+  "customers": [
+    {
+      "name": "Tata Power",
+      "logoText": "TATA POWER"
+    },
+    {
+      "name": "Reliance Infra",
+      "logoText": "RELIANCE"
+    },
+    {
+      "name": "L&T Construction",
+      "logoText": "L&T CONST"
+    },
+    {
+      "name": "Siemens India",
+      "logoText": "SIEMENS"
+    },
+    {
+      "name": "ABB Limited",
+      "logoText": "ABB"
+    },
+    {
+      "name": "Havells India",
+      "logoText": "HAVELLS"
+    }
+  ],
+  "web3formsKey": "8cd39a4f-e6c4-4d2b-8ba9-fd4fb7488d63"
+}

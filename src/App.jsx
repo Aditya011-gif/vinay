@@ -19,9 +19,14 @@ import {
   TrendingUp,
   Sliders,
   LifeBuoy,
-  FileDown
+  FileDown,
+  Trash2,
+  PlusCircle,
+  LogOut,
+  FolderOpen,
+  Upload,
+  Database
 } from 'lucide-react';
-import { CONFIG } from './config';
 
 // Import Assets
 import heroBg from './assets/hero_bg.png';
@@ -53,7 +58,7 @@ const qualityIcons = [
   { icon: HeartHandshake, title: "Reliable Manufacturing", desc: "Years of engineering expertise combined with precision machinery guarantees high efficiency and electrical safety." }
 ];
 
-// Stylized brand SVG logotypes to look exactly like actual high-end corporate identities
+// Stylized brand SVG logotypes
 const customerLogos = {
   "Tata Power": (
     <svg className="slider-logo-svg" viewBox="0 0 130 30" width="130" height="30" fill="currentColor">
@@ -93,7 +98,7 @@ const customerLogos = {
   )
 };
 
-// Custom animated counter component that runs once when scrolled into view
+// Custom animated counter component
 function StatCounter({ target, suffix, duration = 2000 }) {
   const [count, setCount] = useState(0);
   const elementRef = useRef(null);
@@ -147,11 +152,29 @@ function StatCounter({ target, suffix, duration = 2000 }) {
 }
 
 function App() {
+  const [siteConfig, setSiteConfig] = useState(null);
   const [currentPage, setCurrentPage] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
+
+  // Admin Portal state
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminUsername, setAdminUsername] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [adminActiveTab, setAdminActiveTab] = useState('email');
+
+  // Editor states
+  const [editedConfig, setEditedConfig] = useState(null);
+  const [newProduct, setNewProduct] = useState({ name: '', shortDesc: '', desc: '', image: 'product_switchgear.png' });
+  const [newTeam, setNewTeam] = useState({ name: '', role: '', bio: '' });
+  const [newTestimonial, setNewTestimonial] = useState({ client: '', company: '', text: '' });
+
+  // Product page feedback submission states
+  const [feedbackData, setFeedbackData] = useState({ client: '', company: '', text: '' });
+  const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
+
   // Dealer form state
   const [formData, setFormData] = useState({
     fullName: '',
@@ -164,13 +187,38 @@ function App() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Load config.json on mount
+  useEffect(() => {
+    fetch('/config.json')
+      .then((r) => r.json())
+      .then((data) => {
+        setSiteConfig(data);
+      })
+      .catch((err) => {
+        console.error("Failed to load /config.json static file", err);
+      });
+
+    // Admin login session cache
+    const adminSession = sessionStorage.getItem('admin_logged_in');
+    if (adminSession === 'true') {
+      setIsAdminLoggedIn(true);
+    }
+  }, []);
+
+  // Sync editedConfig whenever siteConfig state changes
+  useEffect(() => {
+    if (siteConfig) {
+      setEditedConfig({ ...siteConfig });
+    }
+  }, [siteConfig]);
+
   // Monitor URL Hash changes for Routing
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
       let page = 'home';
       
-      // Handle same-page scrolling hooks (like #/#customers)
+      // Handle same-page scrolling hooks
       if (hash.startsWith('#/#')) {
         const id = hash.slice(3);
         page = 'home';
@@ -193,7 +241,7 @@ function App() {
       
       setCurrentPage(page);
       setIsMobileMenuOpen(false);
-      window.scrollTo(0, 0); // Scroll to top on standard page navigation
+      window.scrollTo(0, 0);
     };
 
     handleHashChange();
@@ -202,7 +250,7 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Monitor scroll to add shadow to header
+  // Monitor scroll
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -216,6 +264,15 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Safe product image resolver
+  const getProductImageSrc = (imgName) => {
+    if (!imgName) return productSwitchgear;
+    if (imgName.startsWith('data:image')) {
+      return imgName; // Dynamic Base64
+    }
+    return productImages[imgName] || productSwitchgear; // Fallback
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -224,37 +281,211 @@ function App() {
     }));
   };
 
-  const handleFormSubmit = (e) => {
+  // Submit enquiry to Gmail using Web3Forms
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        fullName: '',
-        businessName: '',
-        email: '',
-        phone: '',
-        city: '',
-        state: '',
-        message: ''
+    
+    // Prepare Web3Forms payload
+    const payload = {
+      access_key: siteConfig.web3formsKey || "YOUR_ACCESS_KEY_HERE",
+      subject: `New Dealership Enquiry - ${formData.businessName}`,
+      from_name: "Ashoka Power Matrix Portal",
+      "Full Name": formData.fullName,
+      "Business Name": formData.businessName,
+      "Email Address": formData.email,
+      "Phone Number": formData.phone,
+      "Location": `${formData.city}, ${formData.state}`,
+      "Message Detail": formData.message
+    };
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(payload)
       });
+
+      const resData = await response.json();
+      if (resData.success) {
+        setIsSubmitted(true);
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            fullName: '',
+            businessName: '',
+            email: '',
+            phone: '',
+            city: '',
+            state: '',
+            message: ''
+          });
+        }, 5000);
+      } else {
+        alert("Email forwarding service error: " + (resData.message || "Please check your Web3Forms access key."));
+      }
+    } catch (err) {
+      console.error("Form submit failure: ", err);
+      alert("Failed to submit form. Please check your internet connection.");
+    }
+  };
+
+  // Product Page feedback submit
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+    if (!feedbackData.client || !feedbackData.text) return;
+    
+    const newReview = {
+      client: feedbackData.client,
+      company: feedbackData.company || "Independent Buyer",
+      text: feedbackData.text
+    };
+
+    const updated = {
+      ...siteConfig,
+      testimonials: [newReview, ...siteConfig.testimonials]
+    };
+
+    setSiteConfig(updated);
+    setIsFeedbackSubmitted(true);
+    setFeedbackData({ client: '', company: '', text: '' });
+    
+    setTimeout(() => {
+      setIsFeedbackSubmitted(false);
     }, 5000);
   };
 
-  const handleLearnMore = (product) => {
-    setSelectedProduct(product);
+  // Device image selection handler
+  const handleProductImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 800000) {
+      alert("Image size is larger than 800KB. Please compress or choose a smaller image to ensure it saves correctly.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewProduct(prev => ({
+        ...prev,
+        image: reader.result // Base64 data URL
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleEnquireProduct = (productName) => {
-    setSelectedProduct(null);
-    setFormData(prev => ({
-      ...prev,
-      message: `I am interested in getting a quote/catalogue for: ${productName}. Please share pricing and compliance sheets.`
-    }));
-    window.location.hash = '#/dealer';
+  // Admin login handlers
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminUsername === 'admin' && adminPassword === 'adminpassword') {
+      setIsAdminLoggedIn(true);
+      setLoginError('');
+      sessionStorage.setItem('admin_logged_in', 'true');
+      setEditedConfig({ ...siteConfig });
+    } else {
+      setLoginError('Invalid username or password.');
+    }
   };
 
-  // Nav link mapping - Point 'Our Customers' to Home Page section anchor
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    sessionStorage.removeItem('admin_logged_in');
+    setAdminUsername('');
+    setAdminPassword('');
+  };
+
+  // Save changes locally to React state
+  const handleSaveSettings = (e) => {
+    e.preventDefault();
+    setSiteConfig(editedConfig);
+    alert("Changes saved to layout preview! Remember to click 'Export config.json' below to download and update your website globally.");
+  };
+
+  // Product CRUD
+  const handleAddProduct = (e) => {
+    e.preventDefault();
+    if (!newProduct.name || !newProduct.shortDesc) return;
+    const addedProduct = {
+      ...newProduct,
+      id: 'prod-' + Date.now()
+    };
+    const updated = {
+      ...siteConfig,
+      products: [...siteConfig.products, addedProduct]
+    };
+    setSiteConfig(updated);
+    setNewProduct({ name: '', shortDesc: '', desc: '', image: 'product_switchgear.png' });
+    alert("Product added to preview list! Click 'Export config.json' to publish permanently.");
+  };
+
+  const handleDeleteProduct = (id) => {
+    const updatedProducts = siteConfig.products.filter(p => p.id !== id);
+    const updated = { ...siteConfig, products: updatedProducts };
+    setSiteConfig(updated);
+  };
+
+  // Team CRUD
+  const handleAddTeam = (e) => {
+    e.preventDefault();
+    if (!newTeam.name || !newTeam.role) return;
+    const updated = {
+      ...siteConfig,
+      team: [...siteConfig.team, newTeam]
+    };
+    setSiteConfig(updated);
+    setNewTeam({ name: '', role: '', bio: '' });
+    alert("Team member added to preview! Click 'Export config.json' to publish.");
+  };
+
+  const handleDeleteTeam = (name) => {
+    const updatedTeam = siteConfig.team.filter(t => t.name !== name);
+    const updated = { ...siteConfig, team: updatedTeam };
+    setSiteConfig(updated);
+  };
+
+  // Testimonials CRUD
+  const handleAddTestimonial = (e) => {
+    e.preventDefault();
+    if (!newTestimonial.client || !newTestimonial.text) return;
+    const updated = {
+      ...siteConfig,
+      testimonials: [...siteConfig.testimonials, newTestimonial]
+    };
+    setSiteConfig(updated);
+    setNewTestimonial({ client: '', company: '', text: '' });
+    alert("Testimonial added to preview! Click 'Export config.json' to publish.");
+  };
+
+  const handleDeleteTestimonial = (client) => {
+    const updatedTest = siteConfig.testimonials.filter(t => t.client !== client);
+    const updated = { ...siteConfig, testimonials: updatedTest };
+    setSiteConfig(updated);
+  };
+
+  // Direct array mutations
+  const handleServiceChange = (idx, field, value) => {
+    const updatedServices = [...editedConfig.services];
+    updatedServices[idx][field] = value;
+    setEditedConfig({ ...editedConfig, services: updatedServices });
+  };
+
+  // Export JSON Utility
+  const handleExportConfig = () => {
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(siteConfig, null, 2)
+    )}`;
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', jsonString);
+    downloadAnchor.setAttribute('download', 'config.json');
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  // Nav links
   const navLinks = [
     { label: 'Home', path: '#/' },
     { label: 'About', path: '#/about' },
@@ -266,6 +497,17 @@ function App() {
     { label: 'Contact', path: '#/contact' }
   ];
 
+  // Wait for config file load
+  if (!siteConfig) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', backgroundColor: '#F8F9FB' }}>
+        <div style={{ border: '4px solid #f3f3f3', borderTop: '4px solid #0F3D91', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ marginTop: '16px', color: '#4B5563', fontWeight: '600' }}>Loading Website Configuration...</p>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Top Banner Bar */}
@@ -274,15 +516,15 @@ function App() {
           <div className="top-bar-info">
             <span className="top-bar-item" style={{ fontWeight: '700', color: 'var(--accent)' }}>
               <Award size={14} />
-              {CONFIG.company.certification}
+              {siteConfig.company.certification}
             </span>
             <span className="top-bar-item">
               <Mail size={14} />
-              {CONFIG.contact.email}
+              {siteConfig.contact.email}
             </span>
             <span className="top-bar-item">
               <Phone size={14} />
-              {CONFIG.contact.phoneSecondary}
+              {siteConfig.contact.phoneSecondary}
             </span>
           </div>
           <div className="top-bar-links">
@@ -305,10 +547,10 @@ function App() {
         <div className="container header-container">
           <a href="#/" className="logo-container">
             <div className="logo">
-              {CONFIG.company.logoText}
-              <span className="accent">{CONFIG.company.logoAccent}</span>
+              {siteConfig.company.logoText}
+              <span className="accent">{siteConfig.company.logoAccent}</span>
             </div>
-            <span className="logo-tagline">{CONFIG.company.tagline}</span>
+            <span className="logo-tagline">{siteConfig.company.tagline}</span>
           </a>
 
           {/* Desktop Nav */}
@@ -377,7 +619,7 @@ function App() {
               <div className="container hero-container">
                 <div className="hero-content">
                   <span className="hero-tag">B2B & B2C Excellence</span>
-                  <h1>{CONFIG.company.name}</h1>
+                  <h1>{siteConfig.company.name}</h1>
                   <p>Manufacturer of high-grade Current and Potential Transformers, Metering Panels, and custom electrical distribution equipment.</p>
                   <div className="hero-ctas">
                     <a href="#/products" className="btn btn-accent">
@@ -402,7 +644,7 @@ function App() {
             <section className="home-sub-dark">
               <div className="container">
                 <div className="counter-grid">
-                  {CONFIG.stats.map((stat, idx) => (
+                  {siteConfig.stats.map((stat, idx) => (
                     <div key={idx} className="counter-item">
                       <h3>
                         <StatCounter target={stat.value} suffix={stat.suffix} />
@@ -419,7 +661,7 @@ function App() {
               <div className="container about-grid">
                 <div className="about-intro">
                   <h2 className="section-title">Who We Are</h2>
-                  <p style={{ marginTop: '20px' }}>Ashoka Power Matrix Pvt. Ltd. is a premier manufacturer of power switchboards, current transformers (CTs), potential transformers (PTs), and custom control units.</p>
+                  <p style={{ marginTop: '20px' }}>{siteConfig.company.name} is a premier manufacturer of power switchboards, current transformers (CTs), potential transformers (PTs), and custom control units.</p>
                   <p>We combine 25+ years of engineering safety checks to supply certified electrical assets to industries and utility boards nationwide.</p>
                   <a href="#/about" className="btn btn-secondary" style={{ marginTop: '10px' }}>
                     Read Corporate Profile
@@ -452,7 +694,7 @@ function App() {
                   <p>Empowering industries and building critical electrical networks for nationwide projects.</p>
                 </div>
                 <div className="industries-grid">
-                  {CONFIG.industries.map((ind, idx) => (
+                  {siteConfig.industries.map((ind, idx) => (
                     <div key={idx} className="industry-card">
                       <h3>{ind.name}</h3>
                       <p>{ind.desc}</p>
@@ -470,7 +712,7 @@ function App() {
                   <p>Powering trust and building partnerships through high performance and safety compliance.</p>
                 </div>
                 <div className="reviews-grid">
-                  {CONFIG.testimonials.map((review, idx) => (
+                  {siteConfig.testimonials.map((review, idx) => (
                     <div key={idx} className="review-card">
                       <p className="review-text">"{review.text}"</p>
                       <div className="review-author">{review.client}</div>
@@ -490,12 +732,12 @@ function App() {
                 </div>
                 <div className="slider-container">
                   <div className="slider-track">
-                    {CONFIG.customers.map((c, i) => (
+                    {siteConfig.customers.map((c, i) => (
                       <div key={`c1-${i}`} className="slider-logo-card">
                         {customerLogos[c.name] || <span>{c.name}</span>}
                       </div>
                     ))}
-                    {CONFIG.customers.map((c, i) => (
+                    {siteConfig.customers.map((c, i) => (
                       <div key={`c2-${i}`} className="slider-logo-card">
                         {customerLogos[c.name] || <span>{c.name}</span>}
                       </div>
@@ -511,7 +753,7 @@ function App() {
           <section className="page-view container">
             <div className="page-header">
               <h2 className="section-title">About Our Company</h2>
-              <p>Ashoka Power Matrix Pvt. Ltd. is a leading electrical manufacturing enterprise specializing in engineering excellence and robust machinery assemblies.</p>
+              <p>{siteConfig.company.name} is a leading electrical manufacturing enterprise specializing in engineering excellence and robust machinery assemblies.</p>
             </div>
             <div className="about-grid">
               <div className="about-intro">
@@ -572,12 +814,12 @@ function App() {
               <p>Minimal, premium hardware designed for robust commercial layouts and standard residential wiring safety.</p>
             </div>
             <div className="products-grid">
-              {CONFIG.products.map((p) => (
+              {siteConfig.products.map((p) => (
                 <div key={p.id} className="product-card">
                   <div className="product-img-wrapper">
                     <img 
                       className="product-img" 
-                      src={productImages[p.image]} 
+                      src={getProductImageSrc(p.image)} 
                       alt={p.name} 
                       loading="lazy" 
                     />
@@ -592,17 +834,76 @@ function App() {
                       >
                         Request Quote
                       </button>
-                      <a 
-                        href={`tel:${CONFIG.contact.phone}`} 
+                      <button 
                         className="btn btn-secondary"
+                        onClick={() => handleLearnMore(p)}
                       >
-                        <Phone size={13} />
-                        Call Now
-                      </a>
+                        Learn More
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Customer Feedback Form */}
+            <div className="feedback-section">
+              <div className="feedback-card">
+                <h3>Share Your Experience</h3>
+                <p>We value your business feedback! Let us know how our transformers, switchgears, or meters have performed in your grids or facilities.</p>
+                
+                {isFeedbackSubmitted && (
+                  <div className="form-success-msg">
+                    <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                    <div>
+                      <strong>Feedback Saved Locally!</strong> Download updated `config.json` inside footer **Admin Desk** to publish permanently for all users.
+                    </div>
+                  </div>
+                )}
+                
+                <form onSubmit={handleFeedbackSubmit}>
+                  <div className="form-group-row">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="feedClient">Your Name</label>
+                      <input 
+                        type="text" 
+                        id="feedClient" 
+                        value={feedbackData.client} 
+                        onChange={(e) => setFeedbackData({ ...feedbackData, client: e.target.value })}
+                        className="form-input" 
+                        required 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="feedComp">Company / Position</label>
+                      <input 
+                        type="text" 
+                        id="feedComp" 
+                        value={feedbackData.company} 
+                        onChange={(e) => setFeedbackData({ ...feedbackData, company: e.target.value })}
+                        className="form-input" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="feedTxt">Your Testimonial / Feedback</label>
+                    <textarea 
+                      id="feedTxt" 
+                      value={feedbackData.text} 
+                      onChange={(e) => setFeedbackData({ ...feedbackData, text: e.target.value })}
+                      className="form-input" 
+                      placeholder="Write your review here..."
+                      style={{ minHeight: '80px' }}
+                      required 
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <PlusCircle size={16} />
+                    Submit Testimonial
+                  </button>
+                </form>
+              </div>
             </div>
           </section>
         )}
@@ -637,7 +938,7 @@ function App() {
               <p>Engineering excellence from product concept creation and custom sizing to testing and after-sales maintenance.</p>
             </div>
             <div className="services-grid">
-              {CONFIG.services.map((s) => {
+              {siteConfig.services.map((s) => {
                 const IconComp = serviceIcons[s.id] || Zap;
                 return (
                   <div key={s.id} className="services-card">
@@ -660,7 +961,7 @@ function App() {
                 <p>Led by industry pioneers and certified safety auditors committed to electrical innovation.</p>
               </div>
               <div className="team-grid">
-                {CONFIG.team.map((member, idx) => (
+                {siteConfig.team.map((member, idx) => (
                   <div key={idx} className="team-card">
                     <div className="team-avatar">
                       {member.name.split(' ').pop().charAt(0)}
@@ -683,12 +984,12 @@ function App() {
             </div>
             <div className="slider-container">
               <div className="slider-track">
-                {CONFIG.customers.map((c, i) => (
+                {siteConfig.customers.map((c, i) => (
                   <div key={`c1-${i}`} className="slider-logo-card">
                     {customerLogos[c.name] || <span>{c.name}</span>}
                   </div>
                 ))}
-                {CONFIG.customers.map((c, i) => (
+                {siteConfig.customers.map((c, i) => (
                   <div key={`c2-${i}`} className="slider-logo-card">
                     {customerLogos[c.name] || <span>{c.name}</span>}
                   </div>
@@ -702,7 +1003,7 @@ function App() {
           <section className="page-view container">
             <div className="page-header center">
               <h2 className="section-title-center">Become a Dealer</h2>
-              <p>Partner with Ashoka Power Matrix Pvt. Ltd. and distribute premium switchgears and panels to your local markets.</p>
+              <p>Partner with {siteConfig.company.name} and distribute premium switchgears and panels to your local markets.</p>
             </div>
             <div className="dealer-grid">
               <div className="dealer-form-card">
@@ -711,7 +1012,7 @@ function App() {
                   <div className="form-success-msg">
                     <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
                     <div>
-                      <strong>Enquiry Submitted!</strong> Our dealership relations team will verify your business details and contact you within 24 business hours.
+                      <strong>Enquiry Submitted!</strong> Your request has been emailed directly to our Gmail inbox. We will contact you soon.
                     </div>
                   </div>
                 ) : null}
@@ -807,7 +1108,7 @@ function App() {
                     />
                   </div>
                   <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                    Submit Enquiry
+                    Submit Enquiry (Email to Gmail)
                   </button>
                 </form>
               </div>
@@ -815,7 +1116,7 @@ function App() {
                 <iframe 
                   className="map-iframe" 
                   title="Company Location Map"
-                  src={CONFIG.contact.googleMapsEmbedUrl} 
+                  src={siteConfig.contact.googleMapsEmbedUrl} 
                   allowFullScreen="" 
                   loading="lazy" 
                   referrerPolicy="no-referrer-when-downgrade"
@@ -839,12 +1140,12 @@ function App() {
                 <div className="contact-card-content">
                   <h3>Call Us</h3>
                   <p>Primary Office Desk:</p>
-                  <a href={`tel:${CONFIG.contact.phone}`} className="contact-link">
-                    {CONFIG.contact.phoneDisplay}
+                  <a href={`tel:${siteConfig.contact.phone}`} className="contact-link">
+                    {siteConfig.contact.phoneDisplay}
                   </a>
                   <p style={{ marginTop: '5px' }}>Alt / Sales:</p>
-                  <a href={`tel:${CONFIG.contact.phoneSecondary}`} className="contact-link">
-                    {CONFIG.contact.phoneSecondary}
+                  <a href={`tel:${siteConfig.contact.phoneSecondary}`} className="contact-link">
+                    {siteConfig.contact.phoneSecondary}
                   </a>
                 </div>
               </div>
@@ -858,7 +1159,7 @@ function App() {
                   <h3>WhatsApp Us</h3>
                   <p>Instant messaging for fast support and technical catalogue shares:</p>
                   <a 
-                    href={`https://wa.me/91${CONFIG.contact.whatsapp}`} 
+                    href={`https://wa.me/91${siteConfig.contact.whatsapp}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="whatsapp-link"
@@ -874,8 +1175,8 @@ function App() {
                 <div className="contact-card-content">
                   <h3>Email Sales</h3>
                   <p>Send details of RFP documents or dealership requests directly:</p>
-                  <a href={`mailto:${CONFIG.contact.salesEmail}`} className="contact-link">
-                    {CONFIG.contact.salesEmail}
+                  <a href={`mailto:${siteConfig.contact.salesEmail}`} className="contact-link">
+                    {siteConfig.contact.salesEmail}
                   </a>
                 </div>
               </div>
@@ -885,14 +1186,574 @@ function App() {
                 </div>
                 <div className="contact-card-content">
                   <h3>Registered Office</h3>
-                  <p>{CONFIG.contact.address}</p>
+                  <p>{siteConfig.contact.address}</p>
                   <p style={{ marginTop: '5px', fontSize: '0.85rem', color: 'var(--text-light)' }}>
                     <Clock size={12} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />
-                    {CONFIG.contact.businessHours}
+                    {siteConfig.contact.businessHours}
                   </p>
                 </div>
               </div>
             </div>
+          </section>
+        )}
+
+        {/* Admin Router Page */}
+        {currentPage === 'admin' && (
+          <section className="page-view container animate-fade-in">
+            {!isAdminLoggedIn ? (
+              // Login Card
+              <div className="admin-login-wrapper">
+                <div className="admin-login-card">
+                  <h3 className="form-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShieldCheck size={20} className="accent" />
+                    Admin Access Portal
+                  </h3>
+                  {loginError && (
+                    <div style={{ color: '#dc2626', fontSize: '0.85rem', marginBottom: '16px', fontWeight: '600' }}>
+                      {loginError}
+                    </div>
+                  )}
+                  <form onSubmit={handleAdminLogin}>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="adminUser">Username</label>
+                      <input 
+                        type="text" 
+                        id="adminUser" 
+                        value={adminUsername}
+                        onChange={(e) => setAdminUsername(e.target.value)}
+                        className="form-input" 
+                        required 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="adminPass">Password</label>
+                      <input 
+                        type="password" 
+                        id="adminPass" 
+                        value={adminPassword}
+                        onChange={(e) => setAdminPassword(e.target.value)}
+                        className="form-input" 
+                        required 
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '10px' }}>
+                      Verify & Enter
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ) : (
+              // Dashboard Panel
+              <div className="admin-dashboard">
+                {/* Sidebar */}
+                <aside className="admin-sidebar">
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'email' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('email')}
+                  >
+                    <Mail size={16} />
+                    Email Settings
+                  </button>
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'branding' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('branding')}
+                  >
+                    <Settings size={16} />
+                    Branding & Contacts
+                  </button>
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'products' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('products')}
+                  >
+                    <Sliders size={16} />
+                    Products CMS
+                  </button>
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'services' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('services')}
+                  >
+                    <Wrench size={16} />
+                    Services CMS
+                  </button>
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'team' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('team')}
+                  >
+                    <Users size={16} />
+                    Team CMS
+                  </button>
+                  <button 
+                    className={`admin-sidebar-btn ${adminActiveTab === 'testimonials' ? 'active' : ''}`}
+                    onClick={() => setAdminActiveTab('testimonials')}
+                  >
+                    <HeartHandshake size={16} />
+                    Testimonials
+                  </button>
+                  <button 
+                    style={{ marginTop: '24px', backgroundColor: 'rgba(220, 38, 38, 0.1)', color: '#dc2626' }}
+                    className="admin-sidebar-btn"
+                    onClick={handleAdminLogout}
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </aside>
+
+                {/* Dashboard Tabs Content */}
+                <div className="admin-content">
+                  
+                  {/* Publisher Export Widget - Always visible when logged in to help admin sync */}
+                  <div style={{ backgroundColor: 'rgba(15, 61, 145, 0.05)', border: '1px solid rgba(15, 61, 145, 0.12)', padding: '20px', borderRadius: '6px', marginBottom: '24px' }}>
+                    <h4 style={{ color: 'var(--primary)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1rem' }}>
+                      <Database size={16} />
+                      Static Publisher Dashboard
+                    </h4>
+                    <p style={{ fontSize: '0.85rem', marginBottom: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                      All edits apply immediately to your current screen preview. To publish your changes permanently for all web visitors, click the button below to export the updated configuration file and upload it to your host root (`public/config.json`).
+                    </p>
+                    <button onClick={handleExportConfig} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', fontSize: '0.82rem' }}>
+                      <FileDown size={14} />
+                      Export config.json File
+                    </button>
+                  </div>
+
+                  {adminActiveTab === 'email' && (
+                    <div>
+                      <div className="admin-tab-header">
+                        <h2>Email Notifications Settings</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Zero Database Gmail Forwarding</span>
+                      </div>
+                      <div style={{ lineHeight: '1.6' }}>
+                        <p style={{ marginBottom: '16px' }}>The website is configured to forward dealership enquiries directly to your Gmail without storing them in any database.</p>
+                        
+                        <div className="form-group" style={{ backgroundColor: 'var(--section-bg)', padding: '20px', border: '1px solid var(--border)', borderRadius: '4px' }}>
+                          <label className="form-label" style={{ color: 'var(--primary)', fontWeight: '700' }}>Web3Forms Access Key</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.web3formsKey || ''}
+                            onChange={(e) => setEditedConfig({ ...editedConfig, web3formsKey: e.target.value })}
+                            className="form-input" 
+                            style={{ margin: '8px 0 6px' }}
+                            placeholder="e.g. 1a2b3c4d-5e6f-..."
+                          />
+                          <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '4px' }}>
+                            Get a free key instantly by typing your email at <a href="https://web3forms.com" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', fontWeight: '600' }}>web3forms.com</a>. Web3Forms forwards enquiries straight to your email.
+                          </p>
+                        </div>
+                        
+                        <div style={{ marginTop: '20px' }}>
+                          <button 
+                            className="btn btn-primary"
+                            onClick={() => {
+                              setSiteConfig(editedConfig);
+                              alert("Key configuration updated! Remember to download 'config.json' and place it in public folder to activate globally.");
+                            }}
+                          >
+                            Save Key Configuration
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {editedConfig && adminActiveTab === 'branding' && (
+                    <form onSubmit={handleSaveSettings}>
+                      <div className="admin-tab-header">
+                        <h2>Branding & Contact Info</h2>
+                        <button type="submit" className="btn btn-primary">Save Changes</button>
+                      </div>
+                      <div className="admin-form-grid">
+                        <div className="form-group">
+                          <label className="form-label">Company Name</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.company.name} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              company: { ...editedConfig.company, name: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">ISO Certification Tag</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.company.certification} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              company: { ...editedConfig.company, certification: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Phone Primary</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.contact.phone} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              contact: { ...editedConfig.contact, phone: e.target.value, phoneDisplay: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Phone Secondary (ISO Bar)</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.contact.phoneSecondary} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              contact: { ...editedConfig.contact, phoneSecondary: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Email Address</label>
+                          <input 
+                            type="email" 
+                            value={editedConfig.contact.email} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              contact: { ...editedConfig.contact, email: e.target.value, salesEmail: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Logo Text Header</label>
+                          <input 
+                            type="text" 
+                            value={editedConfig.company.logoText} 
+                            onChange={(e) => setEditedConfig({
+                              ...editedConfig,
+                              company: { ...editedConfig.company, logoText: e.target.value }
+                            })}
+                            className="form-input" 
+                            required 
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Brand Tagline</label>
+                        <input 
+                          type="text" 
+                          value={editedConfig.company.tagline} 
+                          onChange={(e) => setEditedConfig({
+                            ...editedConfig,
+                            company: { ...editedConfig.company, tagline: e.target.value }
+                          })}
+                          className="form-input" 
+                          required 
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Registered Office Address</label>
+                        <input 
+                          type="text" 
+                          value={editedConfig.contact.address} 
+                          onChange={(e) => setEditedConfig({
+                            ...editedConfig,
+                            contact: { ...editedConfig.contact, address: e.target.value }
+                          })}
+                          className="form-input" 
+                          required 
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Google Map Embed Link</label>
+                        <input 
+                          type="text" 
+                          value={editedConfig.contact.googleMapsEmbedUrl} 
+                          onChange={(e) => setEditedConfig({
+                            ...editedConfig,
+                            contact: { ...editedConfig.contact, googleMapsEmbedUrl: e.target.value }
+                          })}
+                          className="form-input" 
+                          required 
+                        />
+                      </div>
+                    </form>
+                  )}
+
+                  {editedConfig && adminActiveTab === 'products' && (
+                    <div>
+                      <div className="admin-tab-header">
+                        <h2>Products CMS</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Dynamically Add & Remove Items</span>
+                      </div>
+                      {/* Products List */}
+                      <div style={{ marginBottom: '40px' }}>
+                        <h3>Active Products</h3>
+                        <div style={{ marginTop: '16px' }}>
+                          {siteConfig.products.map(p => (
+                            <div key={p.id} className="admin-list-item">
+                              <div className="admin-list-info" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <img 
+                                  src={getProductImageSrc(p.image)} 
+                                  alt="" 
+                                  style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '2px', border: '1px solid var(--border)' }}
+                                />
+                                <div>
+                                  <h4 style={{ margin: 0 }}>{p.name}</h4>
+                                  <p style={{ margin: 0 }}>{p.shortDesc}</p>
+                                </div>
+                              </div>
+                              <button 
+                                className="btn" 
+                                style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
+                                onClick={() => handleDeleteProduct(p.id)}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Add Product Form */}
+                      <form onSubmit={handleAddProduct} style={{ borderTop: '2px solid var(--border)', paddingTop: '30px' }}>
+                        <h3>Add New Product</h3>
+                        <div className="admin-form-grid" style={{ marginTop: '16px' }}>
+                          <div className="form-group">
+                            <label className="form-label">Product Name</label>
+                            <input 
+                              type="text" 
+                              value={newProduct.name}
+                              onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Short Description</label>
+                            <input 
+                              type="text" 
+                              value={newProduct.shortDesc}
+                              onChange={(e) => setNewProduct({ ...newProduct, shortDesc: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                        </div>
+
+                        {/* File Selector */}
+                        <div className="form-group file-upload-wrapper">
+                          <label className="form-label">Product Photo (Upload from Device)</label>
+                          <label className="file-upload-input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                            <Upload size={16} />
+                            {newProduct.image.startsWith('data:image') ? '✓ Custom Image Selected' : 'Choose Local Image file...'}
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              style={{ display: 'none' }} 
+                              onChange={handleProductImageUpload} 
+                            />
+                          </label>
+                          {newProduct.image.startsWith('data:image') && (
+                            <div className="file-preview-container">
+                              <img src={newProduct.image} alt="Preview" className="file-preview-img" />
+                              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Image ready for export.</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="form-group" style={{ marginTop: '16px' }}>
+                          <label className="form-label">Detailed Description</label>
+                          <textarea 
+                            value={newProduct.desc}
+                            onChange={(e) => setNewProduct({ ...newProduct, desc: e.target.value })}
+                            className="form-input" 
+                            style={{ minHeight: '80px' }}
+                            required 
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <PlusCircle size={16} />
+                          Add Product
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {editedConfig && adminActiveTab === 'services' && (
+                    <form onSubmit={handleSaveSettings}>
+                      <div className="admin-tab-header">
+                        <h2>Services Settings</h2>
+                        <button type="submit" className="btn btn-primary">Save Changes</button>
+                      </div>
+                      <div>
+                        {editedConfig.services.map((s, idx) => (
+                          <div key={s.id} style={{ marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '20px' }}>
+                            <h4 style={{ color: 'var(--primary)', marginBottom: '10px' }}>{s.title}</h4>
+                            <div className="form-group">
+                              <label className="form-label">Service Description</label>
+                              <textarea 
+                                value={s.description} 
+                                onChange={(e) => handleServiceChange(idx, 'description', e.target.value)}
+                                className="form-input" 
+                                style={{ minHeight: '60px' }}
+                                required 
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </form>
+                  )}
+
+                  {editedConfig && adminActiveTab === 'team' && (
+                    <div>
+                      <div className="admin-tab-header">
+                        <h2>Corporate Team CMS</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Manage Executives</span>
+                      </div>
+                      {/* Team List */}
+                      <div style={{ marginBottom: '40px' }}>
+                        <h3>Current Members</h3>
+                        <div style={{ marginTop: '16px' }}>
+                          {siteConfig.team.map((t, idx) => (
+                            <div key={idx} className="admin-list-item">
+                              <div className="admin-list-info">
+                                <h4>{t.name}</h4>
+                                <p>{t.role}</p>
+                              </div>
+                              <button 
+                                className="btn" 
+                                style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
+                                onClick={() => handleDeleteTeam(t.name)}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Add Team Member */}
+                      <form onSubmit={handleAddTeam} style={{ borderTop: '2px solid var(--border)', paddingTop: '30px' }}>
+                        <h3>Add Executive Member</h3>
+                        <div className="admin-form-grid" style={{ marginTop: '16px' }}>
+                          <div className="form-group">
+                            <label className="form-label">Member Name</label>
+                            <input 
+                              type="text" 
+                              value={newTeam.name}
+                              onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Designation Role</label>
+                            <input 
+                              type="text" 
+                              value={newTeam.role}
+                              onChange={(e) => setNewTeam({ ...newTeam, role: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Short Biography</label>
+                          <textarea 
+                            value={newTeam.bio}
+                            onChange={(e) => setNewTeam({ ...newTeam, bio: e.target.value })}
+                            className="form-input" 
+                            style={{ minHeight: '60px' }}
+                            required 
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <PlusCircle size={16} />
+                          Add Member
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {editedConfig && adminActiveTab === 'testimonials' && (
+                    <div>
+                      <div className="admin-tab-header">
+                        <h2>Client Testimonials</h2>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Feedback Reviews Panel</span>
+                      </div>
+                      {/* Testimonials List */}
+                      <div style={{ marginBottom: '40px' }}>
+                        <h3>Active Reviews</h3>
+                        <div style={{ marginTop: '16px' }}>
+                          {siteConfig.testimonials.map((t, idx) => (
+                            <div key={idx} className="admin-list-item">
+                              <div className="admin-list-info">
+                                <h4>{t.client}</h4>
+                                <p>{t.company}</p>
+                              </div>
+                              <button 
+                                className="btn" 
+                                style={{ color: '#dc2626', border: '1px solid #dc2626', padding: '6px 12px' }}
+                                onClick={() => handleDeleteTestimonial(t.client)}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Add Testimonial */}
+                      <form onSubmit={handleAddTestimonial} style={{ borderTop: '2px solid var(--border)', paddingTop: '30px' }}>
+                        <h3>Add Client Review</h3>
+                        <div className="admin-form-grid" style={{ marginTop: '16px' }}>
+                          <div className="form-group">
+                            <label className="form-label">Client Name</label>
+                            <input 
+                              type="text" 
+                              value={newTestimonial.client}
+                              onChange={(e) => setNewTestimonial({ ...newTestimonial, client: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Client Company Name</label>
+                            <input 
+                              type="text" 
+                              value={newTestimonial.company}
+                              onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
+                              className="form-input" 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Review Quotation Text</label>
+                          <textarea 
+                            value={newTestimonial.text}
+                            onChange={(e) => setNewTestimonial({ ...newTestimonial, text: e.target.value })}
+                            className="form-input" 
+                            style={{ minHeight: '60px' }}
+                            required 
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <PlusCircle size={16} />
+                          Add Testimonial
+                        </button>
+                      </form>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </section>
         )}
       </main>
@@ -901,13 +1762,13 @@ function App() {
       <footer className="footer">
         <div className="container footer-top">
           <div className="footer-about">
-            <h3>{CONFIG.company.logoText} <span style={{ color: 'var(--accent)' }}>{CONFIG.company.logoAccent}</span></h3>
+            <h3>{siteConfig.company.logoText} <span style={{ color: 'var(--accent)' }}>{siteConfig.company.logoAccent}</span></h3>
             <p>Providing cutting edge B2B power systems, heavy machinery units, smart grid switchboards, and domestic safety systems across India.</p>
             <div className="social-links">
-              <a href={CONFIG.socials.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
+              <a href={siteConfig.socials.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="LinkedIn">
                 <Users size={14} />
               </a>
-              <a href={CONFIG.socials.facebook} target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Facebook">
+              <a href={siteConfig.socials.facebook} target="_blank" rel="noopener noreferrer" className="social-icon-btn" aria-label="Facebook">
                 <ChevronRight size={14} />
               </a>
             </div>
@@ -925,7 +1786,7 @@ function App() {
           <div className="footer-col">
             <h4>Products</h4>
             <ul className="footer-links">
-              {CONFIG.products.map(p => (
+              {siteConfig.products.map(p => (
                 <li key={p.id}>
                   <a href="#/products" onClick={() => handleLearnMore(p)}>{p.name}</a>
                 </li>
@@ -935,7 +1796,7 @@ function App() {
           <div className="footer-col">
             <h4>Services</h4>
             <ul className="footer-links">
-              {CONFIG.services.map(s => (
+              {siteConfig.services.map(s => (
                 <li key={s.id}>
                   <a href="#/services">{s.title}</a>
                 </li>
@@ -945,7 +1806,9 @@ function App() {
         </div>
         <div className="container footer-bottom">
           <div>
-            &copy; {new Date().getFullYear()} {CONFIG.company.name}. All rights reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.company.name}. All rights reserved. 
+            <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span> 
+            <a href="#/admin" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Admin Desk</a>
           </div>
           <div className="footer-legal-links">
             <a href="#/privacy">Privacy Policy</a>
@@ -967,7 +1830,7 @@ function App() {
             <div className="modal-body">
               <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '4px', marginBottom: '16px', backgroundColor: '#f3f4f6' }}>
                 <img 
-                  src={productImages[selectedProduct.image]} 
+                  src={getProductImageSrc(selectedProduct.image)} 
                   alt={selectedProduct.name} 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                 />
@@ -983,7 +1846,7 @@ function App() {
                   Request Quote
                 </button>
                 <a 
-                  href={`tel:${CONFIG.contact.phone}`} 
+                  href={`tel:${siteConfig.contact.phone}`} 
                   className="btn btn-secondary"
                 >
                   <Phone size={13} />
