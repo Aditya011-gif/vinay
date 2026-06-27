@@ -239,12 +239,12 @@ function AshokaEmblem({ width = "35", height = "32", mode = "light" }) {
 }
 
 // Exact replica logo component matching user image (Vertical Stacked Layout)
-function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }) {
+function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light", bgClearColor }) {
   const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
   const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
   const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
   const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
-  const bgClearColor = mode === "light" ? "#FFFFFF" : "#111827";
+  const fillBgClear = bgClearColor || (mode === "light" ? "#FFFFFF" : "#111827");
 
   return (
     <svg viewBox="0 0 400 360" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
@@ -255,14 +255,30 @@ function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }
           <stop offset="100%" stopColor="#9CA3AF" />
         </linearGradient>
         <filter id="emblem-shadow-vert" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="5" stdDeviation="4" floodColor="#000000" floodOpacity="0.22" />
+          <feDropShadow dx="0" dy="3.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.22" />
         </filter>
       </defs>
 
       {/* Emblem A */}
-      <path d="M 200 10 L 286 170 L 250 170 L 230 132 Q 200 126 170 132 L 150 170 L 114 170 Z" fill={primaryColor} filter="url(#emblem-shadow-vert)" />
-      <path d="M 224 56 L 170 112 L 204 112 L 176 164 L 226 96 L 194 96 Z" fill="url(#silver-bolt-grad-vert)" stroke="#9CA3AF" strokeWidth="0.5" filter="url(#emblem-shadow-vert)" />
-      <path d="M 60 208 Q 200 180 340 208 Q 200 188 60 208 Z" fill={primaryColor} filter="url(#emblem-shadow-vert)" />
+      <g transform="translate(110, 10) scale(1.5)">
+        <path
+          d="M 60 5 L 103 85 L 85 85 L 75 66 Q 60 63 45 66 L 35 85 L 17 85 Z"
+          fill={primaryColor}
+          filter="url(#emblem-shadow-vert)"
+        />
+        <path
+          d="M 72 28 L 45 56 L 62 56 L 42 82 L 73 48 L 57 48 Z"
+          fill="url(#silver-bolt-grad-vert)"
+          stroke="#9CA3AF"
+          strokeWidth="0.5"
+          filter="url(#emblem-shadow-vert)"
+        />
+        <path
+          d="M 10 102 Q 60 88 110 102 Q 60 92 10 102 Z"
+          fill={primaryColor}
+          filter="url(#emblem-shadow-vert)"
+        />
+      </g>
 
       {/* ASHOKA Text */}
       {/* Letter A1 */}
@@ -297,10 +313,10 @@ function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }
 
       {/* PVT. LTD. Divider lines */}
       <line x1="70" y1="304" x2="148" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={bgClearColor} />
+      <circle cx="72" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={fillBgClear} />
       <text x="200" y="309" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="14" fill={accentColor} textAnchor="middle" letterSpacing="0.08em">PVT. LTD.</text>
       <line x1="252" y1="304" x2="330" y2="304" stroke={accentColor} strokeWidth="1.5" />
-      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={bgClearColor} />
+      <circle cx="328" cy="304" r="3" stroke={accentColor} strokeWidth="1.5" fill={fillBgClear} />
 
       {/* Tagline */}
       <line x1="75" y1="324" x2="115" y2="324" stroke={primaryColor} strokeWidth="1.5" />
@@ -314,12 +330,12 @@ function AshokaLogoVertical({ width = "160px", height = "auto", mode = "light" }
 }
 
 // Exact replica logo component matching user image (Horizontal Layout for sticky nav)
-function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light" }) {
+function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light", bgClearColor }) {
   const primaryColor = mode === "light" ? "#0046AD" : "#60A5FA";
   const textColor = mode === "light" ? "#1F2937" : "#F3F4F6";
   const subtextColor = mode === "light" ? "#4B5563" : "#D1D5DB";
   const accentColor = mode === "light" ? "#0F3D91" : "#60A5FA";
-  const bgClearColor = mode === "light" ? "#FFFFFF" : "#111827";
+  const fillBgClear = bgClearColor || (mode === "light" ? "#FFFFFF" : "#111827");
 
   return (
     <svg viewBox="0 0 290 60" width={width} height={height} fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
@@ -330,14 +346,30 @@ function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light"
           <stop offset="100%" stopColor="#9CA3AF" />
         </linearGradient>
         <filter id="emblem-shadow-horiz" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" floodColor="#000000" floodOpacity="0.2" />
+          <feDropShadow dx="0" dy="3.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.22" />
         </filter>
       </defs>
 
       {/* Emblem Left Side */}
-      <path d="M 25 3 L 47 43 L 38.5 43 L 33.5 33 Q 25 31.5 16.5 33 L 11.5 43 L 3 43 Z" fill={primaryColor} filter="url(#emblem-shadow-horiz)" />
-      <path d="M 30 12 L 19 23 L 26 23 L 20 34 L 30 20 L 24 20 Z" fill="url(#silver-bolt-grad-horiz)" stroke="#9CA3AF" strokeWidth="0.5" filter="url(#emblem-shadow-horiz)" />
-      <path d="M 2 52 Q 25 45 48 52 Q 25 47 2 52 Z" fill={primaryColor} filter="url(#emblem-shadow-horiz)" />
+      <g transform="translate(1, 2) scale(0.4)">
+        <path
+          d="M 60 5 L 103 85 L 85 85 L 75 66 Q 60 63 45 66 L 35 85 L 17 85 Z"
+          fill={primaryColor}
+          filter="url(#emblem-shadow-horiz)"
+        />
+        <path
+          d="M 72 28 L 45 56 L 62 56 L 42 82 L 73 48 L 57 48 Z"
+          fill="url(#silver-bolt-grad-horiz)"
+          stroke="#9CA3AF"
+          strokeWidth="0.5"
+          filter="url(#emblem-shadow-horiz)"
+        />
+        <path
+          d="M 10 102 Q 60 88 110 102 Q 60 92 10 102 Z"
+          fill={primaryColor}
+          filter="url(#emblem-shadow-horiz)"
+        />
+      </g>
 
       {/* ASHOKA text */}
       <path d="M 60 24 L 69 6 L 78 24 L 74.5 24 L 69 13.5 L 63.5 24 Z" fill={textColor} />
@@ -367,10 +399,10 @@ function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light"
 
       {/* PVT. LTD. flanking lines */}
       <line x1="183" y1="34" x2="197" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={bgClearColor} />
+      <circle cx="184" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={fillBgClear} />
       <text x="215" y="37" fontFamily="'Outfit', 'Inter', sans-serif" fontWeight="800" fontSize="7" fill={accentColor} textAnchor="middle" letterSpacing="0.05em">PVT. LTD.</text>
       <line x1="233" y1="34" x2="247" y2="34" stroke={accentColor} strokeWidth="0.8" />
-      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={bgClearColor} />
+      <circle cx="246" cy="34" r="1.5" stroke={accentColor} strokeWidth="0.8" fill={fillBgClear} />
 
       {/* Tagline */}
       <line x1="60" y1="45" x2="85" y2="45" stroke={primaryColor} strokeWidth="0.8" />
@@ -382,7 +414,6 @@ function AshokaLogoHorizontal({ width = "220px", height = "auto", mode = "light"
     </svg>
   );
 }
-
 function App() {
   const [siteConfig, setSiteConfig] = useState(null);
   const [queries, setQueries] = useState([]);
@@ -972,7 +1003,7 @@ function App() {
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
           <a href="#/" className="logo-container" style={{ textDecoration: 'none' }}>
-            <AshokaLogoHorizontal width="260px" mode="light" />
+            <AshokaLogoHorizontal width="220px" height="auto" mode="light" />
           </a>
 
           {/* Desktop Nav */}
@@ -2397,7 +2428,7 @@ function App() {
         <div className="container footer-top">
           <div className="footer-about">
             <div style={{ marginBottom: '16px' }}>
-              <AshokaLogoVertical width="200px" mode="dark" />
+              <AshokaLogoVertical width="160px" height="auto" mode="dark" bgClearColor="#0B1C3C" />
             </div>
             <p>Providing cutting edge B2B power systems, heavy machinery units, smart grid switchboards, and domestic safety systems across India.</p>
             <div className="social-links">
