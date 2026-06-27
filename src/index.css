@@ -17,6 +17,7 @@
   --shadow-lg: 0 20px 25px -5px rgba(15, 61, 145, 0.12), 0 10px 10px -5px rgba(15, 61, 145, 0.06);
   --font: 'Inter', sans-serif;
   --header-height: 80px;
+  --top-bar-height: 40px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -105,11 +106,66 @@ p {
   padding: 0 24px;
 }
 
+/* Top Bar Styling */
+.top-bar {
+  background-color: var(--primary);
+  color: rgba(255, 255, 255, 0.95);
+  height: var(--top-bar-height);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-bar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.top-bar-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.top-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-bar-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.top-bar-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.top-bar-link:hover {
+  color: var(--accent);
+}
+
 /* Page Routing Structure */
 .page-view {
-  margin-top: var(--header-height);
+  margin-top: calc(var(--header-height) + var(--top-bar-height));
   padding: 60px 0 100px;
-  min-height: calc(100vh - var(--header-height) - 340px); /* Keeps footer at bottom */
+  min-height: calc(100vh - var(--header-height) - var(--top-bar-height) - 340px); /* Keeps footer at bottom */
   animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -142,7 +198,7 @@ p {
 /* Header & Navigation Styling */
 .header {
   position: fixed;
-  top: 0;
+  top: var(--top-bar-height);
   left: 0;
   width: 100%;
   height: var(--header-height);
@@ -168,12 +224,19 @@ p {
   width: 100%;
 }
 
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  font-size: 1.35rem;
+  gap: 8px;
+  font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--primary);
@@ -184,17 +247,26 @@ p {
   color: var(--accent);
 }
 
+.logo-tagline {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
 .nav {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
 .nav-link {
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   transition: var(--transition);
   position: relative;
   padding: 6px 0;
@@ -295,10 +367,10 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 24px;
+  padding: 10px 22px;
   border-radius: 4px;
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   text-decoration: none;
   cursor: pointer;
   transition: var(--transition);
@@ -345,9 +417,9 @@ p {
 
 /* Hero Page Layout */
 .hero-page {
-  margin-top: var(--header-height);
+  margin-top: calc(var(--header-height) + var(--top-bar-height));
   position: relative;
-  height: calc(100vh - var(--header-height));
+  height: calc(100vh - var(--header-height) - var(--top-bar-height));
   min-height: 500px;
   display: flex;
   align-items: center;
@@ -562,14 +634,20 @@ p {
 
 .product-info p {
   font-size: 0.92rem;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   flex-grow: 1;
 }
 
-.product-info .btn {
-  align-self: flex-start;
-  padding: 6px 14px;
-  font-size: 0.85rem;
+.product-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.product-actions .btn {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  flex-grow: 1;
 }
 
 /* Quality Section */
@@ -652,6 +730,141 @@ p {
 
 .services-card p {
   font-size: 0.92rem;
+}
+
+/* Industries We Serve Section */
+.industries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.industry-card {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 6px;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.industry-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.industry-card h3 {
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+
+.industry-card p {
+  font-size: 0.92rem;
+}
+
+/* Customer Reviews / Testimonials Section */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.review-card {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  padding: 28px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.review-card:hover {
+  box-shadow: var(--shadow);
+  border-color: rgba(15, 61, 145, 0.1);
+}
+
+.review-text {
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.review-author {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+.review-company {
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Team Grid on Services Page */
+.team-section {
+  margin-top: 80px;
+  border-top: 1px solid var(--border);
+  padding-top: 60px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.team-card {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 6px;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.team-card:hover {
+  box-shadow: var(--shadow);
+  border-color: rgba(15, 61, 145, 0.1);
+  transform: translateY(-2px);
+}
+
+.team-avatar {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(15, 61, 145, 0.05);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.team-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 2px;
+}
+
+.team-role {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.team-bio {
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 /* Home Page Sub-sections (Counter & Logo Slider) */
@@ -1101,6 +1314,15 @@ textarea.form-input {
   }
   .footer-top {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-bar-info {
+    display: none; /* Hide email/phone on small devices to avoid text wrapping */
+  }
+  .top-bar-container {
+    justify-content: center; /* Center the profile download & login links */
   }
 }
 

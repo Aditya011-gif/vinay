@@ -18,7 +18,8 @@ import {
   ChevronRight,
   TrendingUp,
   Sliders,
-  LifeBuoy
+  LifeBuoy,
+  FileDown
 } from 'lucide-react';
 import { CONFIG } from './config';
 
@@ -248,7 +249,7 @@ function App() {
     setSelectedProduct(null);
     setFormData(prev => ({
       ...prev,
-      message: `I am interested in learning more about your ${productName}. Please share catalogue, pricing, and dealership terms.`
+      message: `I am interested in getting a quote/catalogue for: ${productName}. Please share pricing and compliance sheets.`
     }));
     window.location.hash = '#/dealer';
   };
@@ -267,12 +268,47 @@ function App() {
 
   return (
     <>
+      {/* Top Banner Bar */}
+      <div className="top-bar">
+        <div className="container top-bar-container">
+          <div className="top-bar-info">
+            <span className="top-bar-item" style={{ fontWeight: '700', color: 'var(--accent)' }}>
+              <Award size={14} />
+              {CONFIG.company.certification}
+            </span>
+            <span className="top-bar-item">
+              <Mail size={14} />
+              {CONFIG.contact.email}
+            </span>
+            <span className="top-bar-item">
+              <Phone size={14} />
+              {CONFIG.contact.phoneSecondary}
+            </span>
+          </div>
+          <div className="top-bar-links">
+            <a 
+              href="/company_profile.pdf" 
+              className="top-bar-link" 
+              download="Ashoka_Power_Matrix_Profile.pdf"
+            >
+              <FileDown size={14} />
+              Download Profile
+            </a>
+            <span style={{ opacity: 0.3 }}>|</span>
+            <a href="#/dealer" className="top-bar-link">Dealer Login</a>
+          </div>
+        </div>
+      </div>
+
       {/* Sticky Header */}
       <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
-          <a href="#/" className="logo">
-            {CONFIG.company.logoText}
-            <span className="accent">{CONFIG.company.logoAccent}</span>
+          <a href="#/" className="logo-container">
+            <div className="logo">
+              {CONFIG.company.logoText}
+              <span className="accent">{CONFIG.company.logoAccent}</span>
+            </div>
+            <span className="logo-tagline">{CONFIG.company.tagline}</span>
           </a>
 
           {/* Desktop Nav */}
@@ -313,6 +349,16 @@ function App() {
             {link.label}
           </a>
         ))}
+        <a 
+          href="/company_profile.pdf" 
+          className="mobile-nav-link" 
+          download="Ashoka_Power_Matrix_Profile.pdf"
+          style={{ fontSize: '1.2rem', color: 'var(--accent)', marginTop: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <FileDown size={18} />
+          Download Profile
+        </a>
       </div>
 
       {/* Main Pages Content Router */}
@@ -325,21 +371,27 @@ function App() {
               <img 
                 className="hero-bg" 
                 src={heroBg} 
-                alt="Ashoba Powermatrix Manufacturing Plant" 
+                alt="Ashoka Power Matrix Manufacturing Plant" 
                 loading="eager"
               />
               <div className="container hero-container">
                 <div className="hero-content">
                   <span className="hero-tag">B2B & B2C Excellence</span>
                   <h1>{CONFIG.company.name}</h1>
-                  <p>{CONFIG.company.tagline}. High-grade electrical manufacturing, reliable industrial solutions, and trusted partnerships nationwide.</p>
+                  <p>Manufacturer of high-grade Current and Potential Transformers, Metering Panels, and custom electrical distribution equipment.</p>
                   <div className="hero-ctas">
                     <a href="#/products" className="btn btn-accent">
                       Explore Products
                       <ArrowRight size={16} />
                     </a>
-                    <a href="#/contact" className="btn btn-secondary">
-                      Contact Us
+                    <a 
+                      href="/company_profile.pdf" 
+                      className="btn btn-secondary"
+                      download="Ashoka_Power_Matrix_Profile.pdf"
+                      style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
+                    >
+                      <FileDown size={16} />
+                      Download Profile
                     </a>
                   </div>
                 </div>
@@ -367,8 +419,8 @@ function App() {
               <div className="container about-grid">
                 <div className="about-intro">
                   <h2 className="section-title">Who We Are</h2>
-                  <p style={{ marginTop: '20px' }}>Ashoba Powermatrix Pvt. Ltd. is a premier manufacturer of power switchboards, distribution boards, copper transformers, and smart electricity meters.</p>
-                  <p>We combine advanced engineering with high safety standards to supply standard and custom electrical assets nationwide.</p>
+                  <p style={{ marginTop: '20px' }}>Ashoka Power Matrix Pvt. Ltd. is a premier manufacturer of power switchboards, current transformers (CTs), potential transformers (PTs), and custom control units.</p>
+                  <p>We combine 25+ years of engineering safety checks to supply certified electrical assets to industries and utility boards nationwide.</p>
                   <a href="#/about" className="btn btn-secondary" style={{ marginTop: '10px' }}>
                     Read Corporate Profile
                   </a>
@@ -377,7 +429,7 @@ function App() {
                   <div className="about-card">
                     <div className="about-card-icon"><ShieldCheck size={22} /></div>
                     <div className="about-card-content">
-                      <h4>Certified Safety Protocols</h4>
+                      <h4>ISO Certified Manufacturing</h4>
                       <p>All items conform to IEC and IS guidelines, undergoing rigid short-circuit audits.</p>
                     </div>
                   </div>
@@ -392,48 +444,45 @@ function App() {
               </div>
             </section>
 
-            {/* Featured Products Preview Section */}
+            {/* Industries We Serve Section */}
             <section className="home-section-alt">
               <div className="container">
                 <div className="page-header center">
-                  <h2 className="section-title-center">Featured Products</h2>
-                  <p>Engineered for maximum reliability and electrical safety.</p>
+                  <h2 className="section-title-center">Industries We Serve</h2>
+                  <p>Empowering industries and building critical electrical networks for nationwide projects.</p>
                 </div>
-                <div className="products-grid">
-                  {CONFIG.products.slice(0, 3).map((p) => (
-                    <div key={p.id} className="product-card">
-                      <div className="product-img-wrapper">
-                        <img 
-                          className="product-img" 
-                          src={productImages[p.image]} 
-                          alt={p.name} 
-                          loading="lazy" 
-                        />
-                      </div>
-                      <div className="product-info">
-                        <h3>{p.name}</h3>
-                        <p>{p.shortDesc}</p>
-                        <button 
-                          className="btn btn-secondary"
-                          onClick={() => handleLearnMore(p)}
-                        >
-                          Learn More
-                        </button>
-                      </div>
+                <div className="industries-grid">
+                  {CONFIG.industries.map((ind, idx) => (
+                    <div key={idx} className="industry-card">
+                      <h3>{ind.name}</h3>
+                      <p>{ind.desc}</p>
                     </div>
                   ))}
-                </div>
-                <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                  <a href="#/products" className="btn btn-primary">
-                    Explore All Products
-                    <ArrowRight size={16} />
-                  </a>
                 </div>
               </div>
             </section>
 
-            {/* Trusted By Continuous Logo Slider (Enriched on Home Page) */}
-            <section id="customers" className="home-section">
+            {/* Customer Reviews Section */}
+            <section className="home-section">
+              <div className="container">
+                <div className="page-header center">
+                  <h2 className="section-title-center">What Our Clients Say</h2>
+                  <p>Powering trust and building partnerships through high performance and safety compliance.</p>
+                </div>
+                <div className="reviews-grid">
+                  {CONFIG.testimonials.map((review, idx) => (
+                    <div key={idx} className="review-card">
+                      <p className="review-text">"{review.text}"</p>
+                      <div className="review-author">{review.client}</div>
+                      <div className="review-company">{review.company}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Trusted By Continuous Logo Slider */}
+            <section id="customers" className="home-section-alt">
               <div className="container">
                 <div className="page-header center" style={{ marginBottom: '32px' }}>
                   <h2 className="section-title-center">Trusted By Industry Leaders</h2>
@@ -462,16 +511,26 @@ function App() {
           <section className="page-view container">
             <div className="page-header">
               <h2 className="section-title">About Our Company</h2>
-              <p>Ashoba Powermatrix Pvt. Ltd. is a leading electrical manufacturing enterprise specializing in engineering excellence and robust machinery assemblies.</p>
+              <p>Ashoka Power Matrix Pvt. Ltd. is a leading electrical manufacturing enterprise specializing in engineering excellence and robust machinery assemblies.</p>
             </div>
             <div className="about-grid">
               <div className="about-intro">
                 <h3>Corporate Powerhouse</h3>
                 <p>With an emphasis on security, durability, and smart integration, we create standard and custom components for industrial parks, residential blocks, and regional distributions.</p>
                 <p>Our manufacturing workflow adopts lean execution practices, assuring quick assembly turnovers while checking every unit for compliance with strict short-circuit safety measures.</p>
-                <a href="#/dealer" className="btn btn-primary" style={{ marginTop: '10px' }}>
-                  Join Our Dealer Network
-                </a>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                  <a href="#/dealer" className="btn btn-primary">
+                    Join Our Dealer Network
+                  </a>
+                  <a 
+                    href="/company_profile.pdf" 
+                    className="btn btn-secondary"
+                    download="Ashoka_Power_Matrix_Profile.pdf"
+                  >
+                    <FileDown size={16} />
+                    Download Profile
+                  </a>
+                </div>
               </div>
               <div className="about-cards">
                 <div className="about-card">
@@ -526,12 +585,21 @@ function App() {
                   <div className="product-info">
                     <h3>{p.name}</h3>
                     <p>{p.shortDesc}</p>
-                    <button 
-                      className="btn btn-secondary"
-                      onClick={() => handleLearnMore(p)}
-                    >
-                      Learn More
-                    </button>
+                    <div className="product-actions">
+                      <button 
+                        className="btn btn-primary"
+                        onClick={() => handleEnquireProduct(p.name)}
+                      >
+                        Request Quote
+                      </button>
+                      <a 
+                        href={`tel:${CONFIG.contact.phone}`} 
+                        className="btn btn-secondary"
+                      >
+                        <Phone size={13} />
+                        Call Now
+                      </a>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -584,6 +652,49 @@ function App() {
                 );
               })}
             </div>
+
+            {/* Our Team Section */}
+            <div className="team-section">
+              <div className="page-header center">
+                <h2 className="section-title-center">Our Corporate Team</h2>
+                <p>Led by industry pioneers and certified safety auditors committed to electrical innovation.</p>
+              </div>
+              <div className="team-grid">
+                {CONFIG.team.map((member, idx) => (
+                  <div key={idx} className="team-card">
+                    <div className="team-avatar">
+                      {member.name.split(' ').pop().charAt(0)}
+                    </div>
+                    <h3>{member.name}</h3>
+                    <div className="team-role">{member.role}</div>
+                    <p className="team-bio">{member.bio}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {currentPage === 'customers' && (
+          <section className="page-view container">
+            <div className="page-header center" style={{ marginBottom: '40px' }}>
+              <h2 className="section-title-center">Our Valued Customers</h2>
+              <p>Powering critical infrastructures for major national and international brands.</p>
+            </div>
+            <div className="slider-container">
+              <div className="slider-track">
+                {CONFIG.customers.map((c, i) => (
+                  <div key={`c1-${i}`} className="slider-logo-card">
+                    {customerLogos[c.name] || <span>{c.name}</span>}
+                  </div>
+                ))}
+                {CONFIG.customers.map((c, i) => (
+                  <div key={`c2-${i}`} className="slider-logo-card">
+                    {customerLogos[c.name] || <span>{c.name}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
@@ -591,7 +702,7 @@ function App() {
           <section className="page-view container">
             <div className="page-header center">
               <h2 className="section-title-center">Become a Dealer</h2>
-              <p>Partner with Ashoba Powermatrix Pvt. Ltd. and distribute premium switchgears and panels to your local markets.</p>
+              <p>Partner with Ashoka Power Matrix Pvt. Ltd. and distribute premium switchgears and panels to your local markets.</p>
             </div>
             <div className="dealer-grid">
               <div className="dealer-form-card">
@@ -727,9 +838,13 @@ function App() {
                 </div>
                 <div className="contact-card-content">
                   <h3>Call Us</h3>
-                  <p>Feel free to reach out to our primary business desk for quick quotes:</p>
+                  <p>Primary Office Desk:</p>
                   <a href={`tel:${CONFIG.contact.phone}`} className="contact-link">
                     {CONFIG.contact.phoneDisplay}
+                  </a>
+                  <p style={{ marginTop: '5px' }}>Alt / Sales:</p>
+                  <a href={`tel:${CONFIG.contact.phoneSecondary}`} className="contact-link">
+                    {CONFIG.contact.phoneSecondary}
                   </a>
                 </div>
               </div>
@@ -865,14 +980,15 @@ function App() {
                   className="btn btn-primary"
                   onClick={() => handleEnquireProduct(selectedProduct.name)}
                 >
-                  Enquire About Dealership
+                  Request Quote
                 </button>
-                <button 
+                <a 
+                  href={`tel:${CONFIG.contact.phone}`} 
                   className="btn btn-secondary"
-                  onClick={() => setSelectedProduct(null)}
                 >
-                  Close
-                </button>
+                  <Phone size={13} />
+                  Call Now
+                </a>
               </div>
             </div>
           </div>
