@@ -541,16 +541,22 @@ function App() {
     };
 
     try {
-      fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json"
         },
         body: JSON.stringify(emailPayload)
-      }).catch((e) => console.error("Web3Forms submit error: ", e));
+      });
+      const result = await response.json();
+      if (result.success) {
+        console.log("Web3Forms: Email sent successfully", result);
+      } else {
+        console.error("Web3Forms: Submission failed", result);
+      }
     } catch (e) {
-      console.error(e);
+      console.error("Web3Forms submit error: ", e);
     }
 
     // 2. Write Document to Firestore Database or Local Storage
@@ -873,13 +879,19 @@ function App() {
     };
 
     try {
-      fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(emailPayload)
-      }).catch((err) => console.error("Web3Forms product enquiry error: ", err));
+      });
+      const result = await response.json();
+      if (result.success) {
+        console.log("Web3Forms: Product enquiry sent successfully", result);
+      } else {
+        console.error("Web3Forms: Product enquiry failed", result);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Web3Forms product enquiry error: ", err);
     }
 
     // 2. Save to Firestore or localStorage
