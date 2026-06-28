@@ -529,7 +529,7 @@ function App() {
 
     // 1. Send Email to Gmail using Web3Forms
     const emailPayload = {
-      access_key: siteConfig.web3formsKey || "YOUR_ACCESS_KEY_HERE",
+      access_key: siteConfig.web3formsKey || "6f67106b-8419-4a0e-8e9c-ff89589c0994",
       subject: `New Dealership Enquiry - ${formData.businessName}`,
       from_name: "Ashoka Power Matrix Portal",
       "Full Name": formData.fullName,
@@ -862,7 +862,7 @@ function App() {
 
     // 1. Send Email via Web3Forms
     const emailPayload = {
-      access_key: siteConfig.web3formsKey || "YOUR_ACCESS_KEY_HERE",
+      access_key: siteConfig.web3formsKey || "6f67106b-8419-4a0e-8e9c-ff89589c0994",
       subject: `Product Enquiry - ${enquiryProduct}`,
       from_name: "Ashoka Power Matrix Portal",
       "Full Name": enquiryData.name,
